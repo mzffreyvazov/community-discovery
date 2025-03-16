@@ -1,6 +1,25 @@
 import { createAdminClient } from '@/lib/supabase'
 import { Search } from 'lucide-react'
+// Add these interfaces at the top of your file
+interface Tag {
+  id: string;
+  name: string;
+}
 
+interface CommunityTag {
+  tag_id: string;
+  tags: Tag;
+}
+
+interface Community {
+  id: string;
+  name: string;
+  description: string;
+  member_count: number;
+  activity_level: string;
+  city: string;
+  community_tags: CommunityTag[];
+}
 export default async function DiscoverPage() {
   const supabase = createAdminClient()
 
@@ -125,14 +144,14 @@ export default async function DiscoverPage() {
               </p>
               {/* Tags - Now using actual tags from the database */}
               <div className="flex flex-wrap gap-2 mb-4">
-                {community.community_tags?.map((tagRelation) => (
-                  <span
-                    key={tagRelation.tag_id}
-                    className="px-3 py-1 bg-secondary rounded-full text-sm"
-                  >
-                    {tagRelation.tags?.name || 'Unknown Tag'}
-                  </span>
-                ))}
+              {community.community_tags?.map((tagRelation: CommunityTag) => (
+                <span
+                  key={tagRelation.tag_id}
+                  className="px-3 py-1 bg-secondary rounded-full text-sm"
+                >
+                  {tagRelation.tags?.name || 'Unknown Tag'}
+                </span>
+              ))}
               </div>
               {/* Location and View Details */}
               <div className="flex items-center justify-between text-sm">
