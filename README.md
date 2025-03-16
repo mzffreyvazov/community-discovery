@@ -2,7 +2,7 @@
 
 A platform that helps people connect with like-minded individuals through shared interests and hobbies. This app focuses on creating natural, low-pressure pathways to meaningful social connections through interest-based matching and location-aware community discovery.
 
-🌐 **Live Demo:** [https://community-discovery.vercel.app/](https://community-discovery.vercel.app/)
+🌐 **Live Demo:** [https://dost.social](https://dost.social)
 
 ## Features
 
