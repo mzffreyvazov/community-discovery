@@ -3,3 +3,5 @@
 - add location saving
     - when users are signing up, ask for their location and save it to the database
 - deploy the current version
+- communities should have chatting section
+- 

@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Community Finder",
+  title: "dost.social",
   description: "Find and connect with like-minded individuals in your community",
 };
 
