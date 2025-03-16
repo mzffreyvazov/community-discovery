@@ -5,10 +5,10 @@ export default async function Home() {
   const { userId } = await auth();
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col items-center">
       {/* Hero Section */}
-      <section className="py-20 px-8 sm:px-20 bg-gradient-to-b from-background to-secondary/20">
-        <div className="max-w-6xl mx-auto text-center">
+      <section className="w-full py-20 px-8 sm:px-20 bg-gradient-to-b from-background to-secondary/20">
+        <div className="container max-w-6xl mx-auto text-center">
           <h1 className="text-4xl sm:text-6xl font-bold mb-6">
             Find Your Community, <br />
             Build Real Connections
@@ -35,8 +35,8 @@ export default async function Home() {
       </section>
 
       {/* Featured Communities Section */}
-      <section className="py-20 px-8 sm:px-20">
-        <div className="max-w-6xl mx-auto">
+      <section className="w-full py-20 px-8 sm:px-20">
+        <div className="container max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold mb-12 text-center">Featured Communities</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Example Community Cards */}
@@ -56,8 +56,8 @@ export default async function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 px-8 sm:px-20 bg-secondary/20">
-        <div className="max-w-6xl mx-auto">
+      <section className="w-full py-20 px-8 sm:px-20 bg-secondary/20">
+        <div className="container max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold mb-12 text-center">What Our Members Say</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Example Testimonials */}
@@ -78,8 +78,8 @@ export default async function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-8 sm:px-20">
-        <div className="max-w-3xl mx-auto text-center">
+      <section className="w-full py-20 px-8 sm:px-20">
+        <div className="container max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Find Your Community?</h2>
           <p className="text-lg text-muted-foreground mb-8">
             Join thousands of others who have found their place in our growing network of communities.

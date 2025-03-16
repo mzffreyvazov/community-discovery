@@ -1,3 +1,4 @@
+// app/middleware.ts
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -18,6 +19,7 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.redirect(new URL("/discover", req.url));
   }
 
+  // Let the request continue without trying to sync with Supabase here
   return NextResponse.next();
 });
 
