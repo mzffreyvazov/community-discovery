@@ -1,4 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Community Discovery
+
+A platform that helps people connect with like-minded individuals through shared interests and hobbies. This app focuses on creating natural, low-pressure pathways to meaningful social connections through interest-based matching and location-aware community discovery.
+
+## Features
+
+- User authentication with email/password and social login options
+- Interest-based community matching
+- Location-aware community discovery
+- Event organization and RSVP system
+- Community management tools
+- User profiles with interest tracking
+
+## Tech Stack
+
+- **Frontend:** Next.js 14, Shadcn UI
+- **Authentication:** Clerk
+- **Database:** Supabase
+- **Icons:** Lucid Icons
 
 ## Getting Started
 
@@ -19,6 +37,24 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Project Structure
+
+```
+COMMUNITY-DISCOVERY/
+├── app/           # Next.js pages and routing
+├── components/    # Reusable UI components
+│   └── ui/       # Shadcn UI components
+├── lib/          # Utility functions and helpers
+└── public/       # Static assets
+```
+
+## Contributing
+
+1. Clone the repository
+2. Create a new branch for your feature
+3. Make your changes
+4. Submit a pull request
 
 ## Learn More
 
