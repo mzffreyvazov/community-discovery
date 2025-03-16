@@ -4,7 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/headers";
 import UserProfileInitializer from '@/components/UserProfileInitializer';
-
+import { Analytics } from "@vercel/analytics/react"
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,6 +34,7 @@ export default function RootLayout({
           <UserProfileInitializer />
           <Header />
           {children}
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
