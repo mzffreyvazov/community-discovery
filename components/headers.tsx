@@ -7,7 +7,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 export default function Header() {
   return (
     <header className="fixed top-0 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50"> {/* Added z-50 */}
-      <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4">
+      <div className="container flex h-14 max-w-screen items-center justify-between px-4">
         <Link href="/" className="font-bold text-lg">
           dost.social
         </Link>

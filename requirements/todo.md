@@ -4,4 +4,14 @@
     - when users are signing up, ask for their location and save it to the database
 - deploy the current version
 - communities should have chatting section
+- details page for communities
+- event page/component
+- create community functionality ?
+- ui improvements
+- staff picked/starred
+- make sure git clon and editing on another branh works correctly
+- implement the browse category functionality
+- after user signs in: when user clicks on logo it should redirect him to the /discover page
+- add user profile editing functionality with shadcn forms
+- implement dark & light theme
 - 

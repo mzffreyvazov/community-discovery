@@ -33,6 +33,7 @@ export default function RootLayout({
         >
           <UserProfileInitializer />
           <Header />
+          <main className="flex-grow pt-22"></main>
           {children}
           <Analytics />
         </body>
