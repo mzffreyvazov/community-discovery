@@ -11,15 +11,8 @@ interface CommunityTag {
   tags: Tag;
 }
 
-interface Community {
-  id: string;
-  name: string;
-  description: string;
-  member_count: number;
-  activity_level: string;
-  city: string;
-  community_tags: CommunityTag[];
-}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 export default async function DiscoverPage() {
   const supabase = createAdminClient()
 
