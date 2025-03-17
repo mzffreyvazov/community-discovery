@@ -15,10 +15,10 @@ export default async function Home() {
             Find Your Community, <br />
             Build Real Connections
           </h1>
-          <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Connect with like-minded individuals through shared interests and hobbies. 
-            Discover local communities and events that match your passions.
-          </p>
+            <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            Join vibrant communities and meet people who share your interests.
+            Explore local groups and events tailored to your unique passions.
+            </p>
           <div className="flex gap-4 justify-center flex-col sm:flex-row">
             {/* Use Link instead of a, but keep the styling */}
             <Link
