@@ -41,20 +41,20 @@ export default async function DiscoverPage() {
     <div className="max-w-7xl mx-auto px-4"> {/* Removed py-8 from here */}
       {/* --- HEADER --- */}
       <header className="mb-8 border-b pb-4"> {/* No changes needed *inside* the header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-col sm:flex-row">
           <div>
             <h1 className="text-2xl font-bold">Discover Communities</h1>
             <p className="text-muted-foreground">
               Find and join communities that match your interests and location
             </p>
           </div>
-          <button className="bg-black text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black/80 transition-colors">
+          <button className="bg-black text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black/80 transition-colors w-full sm:w-auto mt-4 sm:mt-0">
             + Create Community
           </button>
         </div>
 
-        {/* Search and Filters Row - remains the same */}
-        <div className="flex gap-4 items-center mt-6">
+        {/* Search and Filters Row - remains the same */} 
+        <div className="flex flex-col sm:flex-row gap-4 items-center mt-6">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <input
@@ -63,10 +63,10 @@ export default async function DiscoverPage() {
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          <button className="px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-secondary/20 transition-colors">
+          <button className="w-full sm:w-auto px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-secondary/20 transition-colors">
             Filters
           </button>
-          <button className="px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-secondary/20 transition-colors">
+          <button className="w-full sm:w-auto px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-secondary/20 transition-colors">
             Near Me
           </button>
         </div>
