@@ -1,6 +1,5 @@
 import { createAdminClient } from '@/lib/supabase'
 import { Search } from 'lucide-react'
-import Link from 'next/link'
 import { CategoryScroll } from '@/components/CategoryScroll'
 
 // Add these interfaces at the top of your file
