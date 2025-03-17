@@ -1,5 +1,7 @@
 import { createAdminClient } from '@/lib/supabase'
 import { Search } from 'lucide-react'
+import Link from 'next/link'
+
 // Add these interfaces at the top of your file
 interface Tag {
   id: string;
@@ -16,19 +18,25 @@ interface CommunityTag {
 export default async function DiscoverPage() {
   const supabase = createAdminClient()
 
-  // Updated query to include tags through the junction table
-  const { data: communities } = await supabase
-    .from('communities')
-    .select(`
-      *,
-      community_tags(
-        tag_id,
-        tags:tag_id(
-          id,
-          name
+  // Fetch both communities and tags
+  const [{ data: communities }, { data: categories }] = await Promise.all([
+    supabase
+      .from('communities')
+      .select(`
+        *,
+        community_tags(
+          tag_id,
+          tags:tag_id(
+            id,
+            name
+          )
         )
-      )
-    `)
+      `),
+    supabase
+      .from('tags')
+      .select('*')
+      .order('name')
+  ])
 
   return (
     <div className="max-w-7xl mx-auto px-4"> {/* Removed py-8 from here */}
@@ -72,21 +80,19 @@ export default async function DiscoverPage() {
           {/* Categories section remains the same */}
           <h2 className="text-xl font-semibold mb-4">Browse by Category</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {[
-              { icon: '💻', name: 'Technology' },
-              { icon: '🎵', name: 'Music' },
-              { icon: '⚽', name: 'Sports' },
-              { icon: '🎨', name: 'Arts' },
-              { icon: '📚', name: 'Education' },
-              { icon: '🍳', name: 'Food & Drink' },
-            ].map((category) => (
-              <button
-                key={category.name}
-                className="flex flex-col items-center justify-center p-4 border rounded-lg hover:bg-secondary/20 transition-colors"
+            {categories?.map((category) => (
+              <Link
+                key={category.id}
+                href={`/discover?category=${category.id}`}
+                className="
+                  flex flex-col items-center justify-center p-4 border rounded-lg 
+                  hover:bg-secondary/20 transition-transform duration-200
+                  hover:-translate-y-1 hover:shadow-lg
+                "
               >
-                <span className="text-2xl mb-2">{category.icon}</span>
+                <span className="text-2xl mb-2">{category.icon || '📎'}</span>
                 <span className="text-sm">{category.name}</span>
-              </button>
+              </Link>
             ))}
           </div>
         </section>
