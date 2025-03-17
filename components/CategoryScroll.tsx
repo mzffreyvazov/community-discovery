@@ -4,8 +4,14 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { useRef, useState } from 'react'
 
+interface Category {
+  id: string;
+  name: string;
+  icon?: string;
+}
+
 interface CategoryScrollProps {
-  categories: any[]
+  categories: Category[]
 }
 
 export function CategoryScroll({ categories }: CategoryScrollProps) {
