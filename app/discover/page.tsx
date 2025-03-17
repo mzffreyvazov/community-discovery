@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/lib/supabase'
 import { Search } from 'lucide-react'
 import Link from 'next/link'
+import { CategoryScroll } from './components/CategoryScroll'
 
 // Add these interfaces at the top of your file
 interface Tag {
@@ -77,24 +78,7 @@ export default async function DiscoverPage() {
       <main className="py-8"> {/* Add padding here */}
         {/* --- CATEGORIES --- */}
         <section className="mb-8">
-          {/* Categories section remains the same */}
-          <h2 className="text-xl font-semibold mb-4">Browse by Category</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {categories?.map((category) => (
-              <Link
-                key={category.id}
-                href={`/discover?category=${category.id}`}
-                className="
-                  flex flex-col items-center justify-center p-4 border rounded-lg 
-                  hover:bg-secondary/20 transition-transform duration-200
-                  hover:-translate-y-1 hover:shadow-lg
-                "
-              >
-                <span className="text-2xl mb-2">{category.icon || '📎'}</span>
-                <span className="text-sm">{category.name}</span>
-              </Link>
-            ))}
-          </div>
+          <CategoryScroll categories={categories || []} />
         </section>
 
         {/* --- TABS --- */}
