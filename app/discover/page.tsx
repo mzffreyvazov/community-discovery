@@ -1,7 +1,7 @@
 import { createAdminClient } from '@/lib/supabase'
 import { Search } from 'lucide-react'
 import Link from 'next/link'
-import { CategoryScroll } from './components/CategoryScroll'
+import { CategoryScroll } from '@/components/CategoryScroll'
 
 // Add these interfaces at the top of your file
 interface Tag {
@@ -109,6 +109,7 @@ export default async function DiscoverPage() {
                 border rounded-lg p-6
                 transition-transform duration-200
                 hover:-translate-y-1 hover:shadow-lg
+                relative z-20
               "
             >
               <div className="flex items-center gap-4 mb-4">
