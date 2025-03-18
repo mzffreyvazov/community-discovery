@@ -52,7 +52,7 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-            <div className="rounded-lg bg-background p-6 border border-gray-400 shadow-sm">
+            <div className="rounded-lg bg-background p-6 border border-gray-200 shadow-sm">
               <p className="mb-4 italic">&ldquo;I found a local photography group that meets weekly. It&apos;s incredible how much I&apos;ve learned and grown as a photographer through this community.&rdquo;</p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-secondary" />
