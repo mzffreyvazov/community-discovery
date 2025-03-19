@@ -5,12 +5,11 @@ import * as React from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { completeLocationOnboarding } from '../_actions'
-import { useTheme } from 'next-themes'
 
 
 export default function LocationOnboardingPage() {
   const [error, setError] = React.useState('')
-  const [isLoading, setIsLoading] = React.useState(false)
+  // const [isLoading, setIsLoading] = React.useState(false)
   const [locationData, setLocationData] = React.useState({
     country: '',
     city: '',
@@ -20,47 +19,48 @@ export default function LocationOnboardingPage() {
   const { user } = useUser()
   const router = useRouter()
 
-  const handleGeolocation = async () => {
-    setIsLoading(true)
+
+  // const handleGeolocation = async () => {
+  //   setIsLoading(true)
     
-    if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser')
-      setIsLoading(false)
-      return
-    }
+  //   if (!navigator.geolocation) {
+  //     setError('Geolocation is not supported by your browser')
+  //     setIsLoading(false)
+  //     return
+  //   }
     
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-            const { latitude, longitude } = position.coords
+  //   navigator.geolocation.getCurrentPosition(
+  //     async (position) => {
+  //       try {
+  //           const { latitude, longitude } = position.coords
             
-            // Fetch city and country using OpenCage
-            const response = await fetch(`/api/geocode?lat=${latitude}&lng=${longitude}`)
+  //           // Fetch city and country using OpenCage
+  //           const response = await fetch(`/api/geocode?lat=${latitude}&lng=${longitude}`)
             
-            if (!response.ok) {
-              throw new Error('Failed to fetch location data')
-            }
+  //           if (!response.ok) {
+  //             throw new Error('Failed to fetch location data')
+  //           }
             
-            const data = await response.json()
+  //           const data = await response.json()
             
-            setLocationData({
-              country: data.country,
-              city: data.city,
-              latitude,
-              longitude
-            })
-            setIsLoading(false)
-          } catch { // Changed to _err to indicate it's intentionally unused
-            setError('Failed to get location details')
-            setIsLoading(false)
-          }
-        },
-        () => { // Changed to _err to indicate it's intentionally unused
-          setError('Unable to retrieve your location')
-          setIsLoading(false)
-        }
-    )
-  }
+  //           setLocationData({
+  //             country: data.country,
+  //             city: data.city,
+  //             latitude,
+  //             longitude
+  //           })
+  //           setIsLoading(false)
+  //         } catch { // Changed to _err to indicate it's intentionally unused
+  //           setError('Failed to get location details')
+  //           setIsLoading(false)
+  //         }
+  //       },
+  //       () => { // Changed to _err to indicate it's intentionally unused
+  //         setError('Unable to retrieve your location')
+  //         setIsLoading(false)
+  //       }
+  //   )
+  // }
 
   const handleSubmit = async (formData: FormData) => {
     const res = await completeLocationOnboarding(formData)
@@ -81,7 +81,7 @@ export default function LocationOnboardingPage() {
         
         <div className="mb-6">
           <button
-            onClick={handleGeolocation}
+            // onClick={handleGeolocation}
             disabled={true}
             className="w-full py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-foreground bg-muted hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 cursor-not-allowed"
           >

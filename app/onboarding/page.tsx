@@ -8,7 +8,6 @@ import { useTheme } from 'next-themes'
 export default function OnboardingPage() {
   const [error, setError] = React.useState('')
   const router = useRouter()
-  const { theme } = useTheme()
 
   const handleSubmit = async (formData: FormData) => {
     try {
