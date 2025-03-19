@@ -1,7 +1,12 @@
-// Remove the Image import if not using it
-// import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link"; // Add Link import
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 export default async function Home() {
   const { userId } = await auth();
@@ -9,16 +14,16 @@ export default async function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center">
       {/* Hero Section */}
-      <section className="w-full py-20 px-8 sm:px-20 bg-gradient-to-b from-background to-secondary/20">
+      <section className="w-full py-20 px-4 sm:px-20 bg-gradient-to-b from-background to-secondary/20">
         <div className="container max-w-6xl mx-auto text-center">
           <h1 className="text-4xl sm:text-6xl font-bold mb-6">
             Find Your Community, <br />
             Build Real Connections
           </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join vibrant communities and meet people who share your interests.
             Explore local groups and events tailored to your unique passions.
-            </p>
+          </p>
           <div className="flex gap-4 justify-center flex-col sm:flex-row">
             {/* Use Link instead of a, but keep the styling */}
             <Link
@@ -37,77 +42,66 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Fix the unescaped quotes in this section */}
-      <section className="w-full py-20 px-8 sm:px-20 bg-secondary/20">
+      {/* Testimonials section */}
+      <section className="w-full py-20 px-4 sm:px-20 bg-secondary/20">
         <div className="container max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold mb-12 text-center">What Our Members Say</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="rounded-lg bg-background p-6 border border-gray-200 shadow-sm">
-              <p className="mb-4 italic">&ldquo;Community Finder helped me connect with amazing people who share my interests. I&apos;ve made real friendships that go beyond the screen.&rdquo;</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary" />
-                <div>
-                  <p className="font-semibold">Sarah Johnson</p>
-                  <p className="text-sm text-muted-foreground">Music Community Member</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-lg bg-background p-6 border border-gray-200 shadow-sm">
-              <p className="mb-4 italic">&ldquo;I found a local photography group that meets weekly. It&apos;s incredible how much I&apos;ve learned and grown as a photographer through this community.&rdquo;</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary" />
-                <div>
-                  <p className="font-semibold">David Chen</p>
-                  <p className="text-sm text-muted-foreground">Photography Enthusiast</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-lg bg-background p-6 border border-gray-200 shadow-sm">
-              <p className="mb-4 italic">&ldquo;As a book lover, finding others who enjoy discussing literature has been fantastic. Our monthly book club meetups are the highlight of my month.&rdquo;</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary" />
-                <div>
-                  <p className="font-semibold">Emily Martinez</p>
-                  <p className="text-sm text-muted-foreground">Book Club Organizer</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-lg bg-background p-6 border border-gray-200 shadow-sm">
-              <p className="mb-4 italic">&ldquo;The hiking community here is amazing! I&apos;ve discovered so many beautiful trails and made great friends who share my love for outdoor adventures.&rdquo;</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary" />
-                <div>
-                  <p className="font-semibold">Michael Thompson</p>
-                  <p className="text-sm text-muted-foreground">Hiking Enthusiast</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-lg bg-background p-6 border border-gray-200 shadow-sm">
-              <p className="mb-4 italic">&ldquo;This platform connected me with fellow tech enthusiasts. We now co-work regularly and collaborate on exciting projects together.&rdquo;</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary" />
-                <div>
-                  <p className="font-semibold">Lisa Wong</p>
-                  <p className="text-sm text-muted-foreground">Tech Community Lead</p>
-                </div>
-              </div>
-            </div>
-            <div className="rounded-lg bg-background p-6 border border-gray-200 shadow-sm">
-              <p className="mb-4 italic">&ldquo;Finding a local cooking club changed my life! We share recipes, cook together, and have amazing potluck gatherings every month.&rdquo;</p>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary" />
-                <div>
-                  <p className="font-semibold">James Rodriguez</p>
-                  <p className="text-sm text-muted-foreground">Culinary Community Member</p>
-                </div>
-              </div>
-            </div>
+            {[
+              {
+                quote: "Community Finder helped me connect with amazing people who share my interests. I've made real friendships that go beyond the screen.",
+                name: "Sarah Johnson",
+                role: "Music Community Member"
+              },
+              {
+                quote: "I found a local photography group that meets weekly. It's incredible how much I've learned and grown as a photographer through this community.",
+                name: "David Chen",
+                role: "Photography Enthusiast"
+              },
+              {
+                quote: "As a book lover, finding others who enjoy discussing literature has been fantastic. Our monthly book club meetups are the highlight of my month.",
+                name: "Emily Martinez",
+                role: "Book Club Organizer"
+              },
+              {
+                quote: "The hiking community here is amazing! I've discovered so many beautiful trails and made great friends who share my love for outdoor adventures.",
+                name: "Michael Thompson",
+                role: "Hiking Enthusiast"
+              },
+              {
+                quote: "This platform connected me with fellow tech enthusiasts. We now co-work regularly and collaborate on exciting projects together.",
+                name: "Lisa Wong",
+                role: "Tech Community Lead"
+              },
+              {
+                quote: "Finding a local cooking club changed my life! We share recipes, cook together, and have amazing potluck gatherings every month.",
+                name: "James Rodriguez",
+                role: "Culinary Community Member"
+              }
+            ].map((testimonial, index) => (
+              <Card key={index} className="w-full sm:w-[380px] transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+                <CardHeader className="flex-1">
+                  <CardDescription className="h-[80px] overflow-y-auto text-sm">
+                    {testimonial.quote}
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-secondary" />
+                    <div>
+                      <CardTitle className="text-base">{testimonial.name}</CardTitle>
+                      <CardDescription>{testimonial.role}</CardDescription>
+                    </div>
+                  </div>
+                </CardFooter>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="w-full py-20 px-8 sm:px-20">
+      <section className="w-full py-20 px-4 sm:px-20">
         <div className="container max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Find Your Community?</h2>
           <p className="text-lg text-muted-foreground mb-8">

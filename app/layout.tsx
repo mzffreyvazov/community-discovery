@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/headers";
 import UserProfileInitializer from '@/components/UserProfileInitializer';
 import { Analytics } from "@vercel/analytics/react"
+import { ThemeProvider } from "@/components/theme-provider";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,15 +28,25 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
         >
-          <UserProfileInitializer />
-          <Header />
-          <main className="flex-grow pt-22"></main>
-          {children}
-          <Analytics />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="flex flex-col min-h-screen">
+              <UserProfileInitializer />
+              <Header />
+              <main className="flex-grow pt-22">
+                {children}
+              </main>
+              <Analytics />
+            </div>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>
