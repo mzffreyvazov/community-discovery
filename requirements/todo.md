@@ -9,9 +9,18 @@
 - [ ] create community functionality ?
 - [ ] ui improvements
 - [ ] staff picked/starred
-- [ ] make sure git clon and editing on another branh works correctly
+- [x] make sure git clon and editing on another branh works correctly
 - [ ] implement the browse category functionality
 - [ ] after user signs in: when user clicks on logo it should redirect him to the /discover page
 - [ ] add user profile editing functionality with shadcn forms
 - [x] implement dark & light theme
 - [ ] create onboarding process for the signups
+- [ ] mobile version will be in PWA format
+- [ ] implement role-based permissions (community creators, event creators, regular users)
+- [ ] add conditional UI elements based on user roles
+- [ ] create community discussion board/forum functionality
+- [ ] implement RSVP system for events
+- [ ] add community join/leave functionality
+- [ ] create activity history tracking for user profiles
+- [ ] develop community member management features
+- [ ] implement user interests selection and matching algorithm
