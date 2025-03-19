@@ -1,7 +1,6 @@
 'use server'
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { headers } from 'next/headers';
 
 export async function completeOnboarding(formData: FormData) {
     try {
