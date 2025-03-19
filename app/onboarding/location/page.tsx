@@ -48,12 +48,12 @@ export default function LocationOnboardingPage() {
               longitude
             })
             setIsLoading(false)
-          } catch (_err) { // Changed to _err to indicate it's intentionally unused
+          } catch { // Changed to _err to indicate it's intentionally unused
             setError('Failed to get location details')
             setIsLoading(false)
           }
         },
-        (_err) => { // Changed to _err to indicate it's intentionally unused
+        () => { // Changed to _err to indicate it's intentionally unused
           setError('Unable to retrieve your location')
           setIsLoading(false)
         }

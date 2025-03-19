@@ -23,7 +23,7 @@ const handleSubmit = async (formData: FormData) => {
       if (res?.error) {
         setError(res?.error);
       }
-    } catch (_err) { // Changed 'err' to '_err' to indicate intentionally unused parameter
+    } catch  { // Changed 'err' to '_err' to indicate intentionally unused parameter
       setError('An unexpected error occurred');
     }
   };
