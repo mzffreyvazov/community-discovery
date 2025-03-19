@@ -5,6 +5,8 @@ import * as React from 'react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { completeLocationOnboarding } from '../_actions'
+import { useTheme } from 'next-themes'
+
 
 export default function LocationOnboardingPage() {
   const [error, setError] = React.useState('')
@@ -73,20 +75,23 @@ export default function LocationOnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold text-center mb-6">Where are you located?</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
+      <div className="w-full max-w-md bg-card rounded-lg shadow-md p-6">
+        <h1 className="text-2xl font-bold text-center mb-6 text-foreground">Where are you located?</h1>
         
         <div className="mb-6">
           <button
             onClick={handleGeolocation}
-            disabled={isLoading}
-            className="w-full py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            disabled={true}
+            className="w-full py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-foreground bg-muted hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 cursor-not-allowed"
           >
-            {isLoading ? 'Getting location...' : 'Use my current location'}
+            Use my current location
           </button>
-          <p className="text-sm text-gray-500 mt-2 text-center">
-            Or manually enter your location below
+          <p className="text-xs text-yellow-500 dark:text-yellow-400 mt-1 text-center">
+            ⚡ Coming soon! This feature is currently under development.
+          </p>
+          <p className="text-sm text-muted-foreground mt-2 text-center">
+            Please manually enter your location below
           </p>
         </div>
         
@@ -94,7 +99,7 @@ export default function LocationOnboardingPage() {
           <div>
             <label 
               htmlFor="country" 
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-foreground mb-1"
             >
               Country
             </label>
@@ -104,7 +109,7 @@ export default function LocationOnboardingPage() {
               type="text"
               value={locationData.country}
               onChange={(e) => setLocationData({...locationData, country: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border bg-background text-foreground border-input rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
               required
             />
           </div>
@@ -112,7 +117,7 @@ export default function LocationOnboardingPage() {
           <div>
             <label 
               htmlFor="city" 
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-foreground mb-1"
             >
               City
             </label>
@@ -122,7 +127,7 @@ export default function LocationOnboardingPage() {
               type="text"
               value={locationData.city}
               onChange={(e) => setLocationData({...locationData, city: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border bg-background text-foreground border-input rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
               required
             />
           </div>
@@ -132,13 +137,13 @@ export default function LocationOnboardingPage() {
           <input type="hidden" name="longitude" value={locationData.longitude || ''} />
 
           {error && (
-            <p className="text-red-600 text-sm">Error: {error}</p>
+            <p className="text-destructive text-sm">Error: {error}</p>
           )}
 
           <div className="flex justify-end">
             <button
               type="submit"
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
             >
               Complete Onboarding
             </button>

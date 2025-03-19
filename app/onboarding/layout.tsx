@@ -1,7 +1,7 @@
 // app/onboarding/layout.tsx
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-
+import { ThemeProvider } from '@/components/theme-provider'
 export default async function RootLayout({ 
   children 
 }: { 
@@ -14,5 +14,14 @@ export default async function RootLayout({
     redirect('/')
   }
 
-  return <>{children}</>;
+  return (
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      {children}
+    </ThemeProvider>
+  );
 }
