@@ -48,7 +48,8 @@ export async function POST() {
         .insert({
           clerk_user_id: userId.toString(),  // Ensure it's treated as a string
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          bio: null // Initialize bio to null
         })
         .select()
         .single();
@@ -66,6 +67,61 @@ export async function POST() {
     return NextResponse.json({ user: existingUser });
   } catch (error) {
     console.error('Error in profile creation:', error);
+    return NextResponse.json(
+      { 
+        error: 'Internal server error',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
+  }
+}
+// a new PUT endpoint to handle bio updates
+// ...existing code...
+
+export async function PUT(request: Request) {
+  try {
+    const session = await auth();
+    const userId = session.userId;
+    
+    if (!userId) {
+      console.error('No userId found in auth');
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { bio } = body;
+
+    if (!bio) {
+      return NextResponse.json({ error: 'Bio is required' }, { status: 400 });
+    }
+
+    console.log('Updating bio for user:', userId);
+
+    // Update user's bio in Supabase
+    const { data: updatedUser, error: updateError } = await supabaseAdmin
+      .from('users')
+      .update({
+        bio,
+        updated_at: new Date().toISOString()
+      })
+      .eq('clerk_user_id', userId.toString())
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error('Error updating user bio:', updateError);
+      return NextResponse.json({ error: updateError.message }, { status: 500 });
+    }
+
+    if (!updatedUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    console.log('Bio updated successfully:', updatedUser);
+    return NextResponse.json({ user: updatedUser });
+  } catch (error) {
+    console.error('Error updating bio:', error);
     return NextResponse.json(
       { 
         error: 'Internal server error',
