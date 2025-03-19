@@ -10,17 +10,25 @@ export default function OnboardingPage() {
   const { user } = useUser()
   const router = useRouter()
 
-  const handleSubmit = async (formData: FormData) => {
-    const res = await completeOnboarding(formData)
-    if (res?.message) {
-      // Reload user data from Clerk API
-      await user?.reload()
-      router.push('/discover')
+// app/onboarding/page.tsx - Update the handleSubmit function
+const handleSubmit = async (formData: FormData) => {
+    try {
+      setError('');
+      const res = await completeOnboarding(formData);
+      
+      if (res?.message) {
+        // Instead of relying on metadata changes and reloading the user
+        // Just directly navigate to the next page
+        router.push('/onboarding/location');
+      }
+      
+      if (res?.error) {
+        setError(res?.error);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
     }
-    if (res?.error) {
-      setError(res?.error)
-    }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
@@ -55,10 +63,10 @@ export default function OnboardingPage() {
 
           <div className="flex justify-end">
             <button
-              type="submit"
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Complete Onboarding
+                type="submit"
+                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                Continue to Next Step
             </button>
           </div>
         </form>

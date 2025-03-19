@@ -1,10 +1,16 @@
+// types/globals.d.ts
 export {}
 
 declare global {
   interface CustomJwtSessionClaims {
     metadata: {
       onboardingComplete?: boolean,
-      bio?: string
+      onboardingStep?: 'bio-completed' | 'location-completed',
+      bio?: string,
+      location?: {
+        city: string,
+        country: string
+      }
     }
   }
 }
