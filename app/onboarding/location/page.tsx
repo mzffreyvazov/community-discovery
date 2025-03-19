@@ -30,33 +30,33 @@ export default function LocationOnboardingPage() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          const { latitude, longitude } = position.coords
-          
-          // Fetch city and country using OpenCage
-          const response = await fetch(`/api/geocode?lat=${latitude}&lng=${longitude}`)
-          
-          if (!response.ok) {
-            throw new Error('Failed to fetch location data')
+            const { latitude, longitude } = position.coords
+            
+            // Fetch city and country using OpenCage
+            const response = await fetch(`/api/geocode?lat=${latitude}&lng=${longitude}`)
+            
+            if (!response.ok) {
+              throw new Error('Failed to fetch location data')
+            }
+            
+            const data = await response.json()
+            
+            setLocationData({
+              country: data.country,
+              city: data.city,
+              latitude,
+              longitude
+            })
+            setIsLoading(false)
+          } catch (_err) { // Changed to _err to indicate it's intentionally unused
+            setError('Failed to get location details')
+            setIsLoading(false)
           }
-          
-          const data = await response.json()
-          
-          setLocationData({
-            country: data.country,
-            city: data.city,
-            latitude,
-            longitude
-          })
-          setIsLoading(false)
-        } catch (err) {
-          setError('Failed to get location details')
+        },
+        (_err) => { // Changed to _err to indicate it's intentionally unused
+          setError('Unable to retrieve your location')
           setIsLoading(false)
         }
-      },
-      (err) => {
-        setError('Unable to retrieve your location')
-        setIsLoading(false)
-      }
     )
   }
 

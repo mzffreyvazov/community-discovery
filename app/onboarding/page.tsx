@@ -1,13 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { completeOnboarding } from './_actions'
 
 export default function OnboardingPage() {
   const [error, setError] = React.useState('')
-  const { user } = useUser()
   const router = useRouter()
 
 // app/onboarding/page.tsx - Update the handleSubmit function
@@ -25,7 +23,7 @@ const handleSubmit = async (formData: FormData) => {
       if (res?.error) {
         setError(res?.error);
       }
-    } catch (err) {
+    } catch (_err) { // Changed 'err' to '_err' to indicate intentionally unused parameter
       setError('An unexpected error occurred');
     }
   };
