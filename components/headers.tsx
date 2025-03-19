@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
+
 export function ModeToggle() {
   const { setTheme } = useTheme()
  
@@ -79,9 +80,10 @@ export default function Header() {
             <nav className="hidden md:flex items-center gap-6">
               <Link
                 href="/discover"
-                className="text-sm font-medium hover:text-foreground/80 flex-shrink-0"
+                className="text-sm font-[650] hover:text-foreground/80 flex-shrink-0 relative group"
               >
                 Discover
+                <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-foreground transition-all duration-300 group-hover:w-full"></span>
               </Link>
               <div className="flex-shrink-0">
                 <ModeToggle />
