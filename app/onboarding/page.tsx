@@ -4,7 +4,6 @@ import * as React from 'react'
 import { useRouter } from 'next/navigation'
 import { completeOnboarding } from './_actions'
 import { UserInfoForm } from '@/components/UserInfoFormOnboarding'
-import { ThemeProvider } from '@/components/theme-provider'
 
 export default function OnboardingPage() {
   const [error, setError] = React.useState('')

@@ -38,7 +38,6 @@ export function UserInfoForm({
   initialInterests = [],
   ...props
 }: UserInfoFormProps) {
-  const { theme } = useTheme()  
   const [interests, setInterests] = React.useState<InterestTag[]>([])
   const [bio, setBio] = React.useState(initialBio)
   const [selectedInterests, setSelectedInterests] = React.useState<string[]>(initialInterests)
@@ -73,13 +72,13 @@ export function UserInfoForm({
     }
   }
 
-  const handleRemovePhoto = () => {
-    setProfilePhoto(null)
-    setPhotoPreview(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""
-    }
-  }
+//   const handleRemovePhoto = () => {
+//     setProfilePhoto(null)
+//     setPhotoPreview(null)
+//     if (fileInputRef.current) {
+//       fileInputRef.current.value = ""
+//     }
+//   }
 
   const handleSave = () => {
     if (onSave) {
