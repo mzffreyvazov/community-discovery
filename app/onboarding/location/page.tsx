@@ -49,15 +49,38 @@ interface LoadingState {
   cities: boolean;
 }
 
+// Inteface for Command components
+interface CommandInputProps extends React.ComponentPropsWithoutRef<'input'> {
+  placeholder?: string;
+}
+
+interface CommandEmptyProps extends React.ComponentPropsWithoutRef<'div'> {
+  children: React.ReactNode;
+}
+
+interface CommandGroupProps extends React.ComponentPropsWithoutRef<'div'> {
+  children: React.ReactNode;
+}
+
+interface CommandListProps extends React.ComponentPropsWithoutRef<'div'> {
+  children: React.ReactNode;
+}
+
+interface CommandItemProps {
+  value: string;
+  children: React.ReactNode;
+  onSelect: (value: string) => void;
+  className?: string;
+}
+
 const CommandWithChildren = Command as React.FC<{ children: React.ReactNode }>
 
 // Cast the command sub-components to accept arbitrary props
-const CommandInputAny = CommandInput as React.FC<any>
-const CommandEmptyAny = CommandEmpty as React.FC<any>
-const CommandGroupAny = CommandGroup as React.FC<any>
-const CommandListAny = CommandList as React.FC<any>
-// New alias for CommandItem to allow children and explicit onSelect type
-const CommandItemAny = CommandItem as React.FC<any>
+const CommandInputWithTypes = CommandInput as React.FC<CommandInputProps>
+const CommandEmptyWithTypes = CommandEmpty as React.FC<CommandEmptyProps>
+const CommandGroupWithTypes = CommandGroup as React.FC<CommandGroupProps>
+const CommandListWithTypes = CommandList as React.FC<CommandListProps>
+const CommandItemWithTypes = CommandItem as React.FC<CommandItemProps>
 
 export default function LocationOnboardingPage() {
   const [error, setError] = React.useState<string>('')
@@ -240,21 +263,21 @@ React.useEffect(() => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-full p-0" align="start">
-                <CommandWithChildren>
-                  <CommandInputAny placeholder="Search country..." />
-                  <CommandListAny>
-                    <CommandEmptyAny>No country found.</CommandEmptyAny>
-                    <CommandGroupAny>
+              <CommandWithChildren>
+                  <CommandInputWithTypes placeholder="Search country..." />
+                  <CommandListWithTypes>
+                    <CommandEmptyWithTypes>No country found.</CommandEmptyWithTypes>
+                    <CommandGroupWithTypes>
                       {countries.map((country) => (
-                        <CommandItemAny
+                        <CommandItemWithTypes
                           key={country.value}
                           value={country.value}
-                          onSelect={(currentValue: string) => { // explicit type for parameter
+                          onSelect={(currentValue: string) => {
                             const newValue = currentValue === locationData.country ? "" : currentValue
                             setLocationData({
                               ...locationData, 
                               country: newValue,
-                              city: "" // Reset city when country changes
+                              city: ""
                             })
                             setCountryOpen(false)
                           }}
@@ -266,10 +289,10 @@ React.useEffect(() => {
                               locationData.country === country.value ? "opacity-100" : "opacity-0"
                             )}
                           />
-                        </CommandItemAny>
+                        </CommandItemWithTypes>
                       ))}
-                    </CommandGroupAny>
-                  </CommandListAny>
+                    </CommandGroupWithTypes>
+                  </CommandListWithTypes>
                 </CommandWithChildren>
               </PopoverContent>
             </Popover>
@@ -304,35 +327,35 @@ React.useEffect(() => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-full p-0" align="start">
-                <CommandWithChildren>
-                  <CommandInputAny placeholder="Search city..." />
-                  <CommandListAny>
-                    <CommandEmptyAny>No city found.</CommandEmptyAny>
-                    <CommandGroupAny>
-                      {cities.map((city) => (
-                        <CommandItemAny
-                          key={city.value}
-                          value={city.value}
-                          onSelect={(currentValue: string) => {
-                            setLocationData({
-                              ...locationData, 
-                              city: currentValue === locationData.city ? "" : currentValue
-                            })
-                            setCityOpen(false)
-                          }}
-                        >
-                          {city.label}
-                          <Check
-                            className={cn(
-                              "ml-auto",
-                              locationData.city === city.value ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                        </CommandItemAny>
-                      ))}
-                    </CommandGroupAny>
-                  </CommandListAny>
-                </CommandWithChildren>
+              <CommandWithChildren>
+                <CommandInputWithTypes placeholder="Search city..." />
+                <CommandListWithTypes>
+                  <CommandEmptyWithTypes>No city found.</CommandEmptyWithTypes>
+                  <CommandGroupWithTypes>
+                    {cities.map((city) => (
+                      <CommandItemWithTypes
+                        key={city.value}
+                        value={city.value}
+                        onSelect={(currentValue: string) => {
+                          setLocationData({
+                            ...locationData, 
+                            city: currentValue === locationData.city ? "" : currentValue
+                          })
+                          setCityOpen(false)
+                        }}
+                      >
+                        {city.label}
+                        <Check
+                          className={cn(
+                            "ml-auto",
+                            locationData.city === city.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                      </CommandItemWithTypes>
+                    ))}
+                  </CommandGroupWithTypes>
+                </CommandListWithTypes>
+              </CommandWithChildren>
               </PopoverContent>
             </Popover>
           </div>
