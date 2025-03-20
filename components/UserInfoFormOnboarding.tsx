@@ -15,16 +15,6 @@ interface InterestTag {
   label: string
 }
 
-// const defaultInterests: InterestTag[] = [
-//   { id: "tech", label: "Technology" },
-//   { id: "travel", label: "Travel" },
-//   { id: "food", label: "Food & Cooking" },
-//   { id: "fitness", label: "Fitness" },
-//   { id: "art", label: "Art & Design" },
-//   { id: "music", label: "Music" },
-//   { id: "books", label: "Books" },
-//   { id: "nature", label: "Nature" },
-// ]
 
 interface UserInfoFormProps extends React.HTMLAttributes<HTMLDivElement> {
     onSave?: (data: { 
