@@ -2,67 +2,182 @@
 'use client'
 
 import * as React from 'react'
+import { Check, ChevronsUpDown } from 'lucide-react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { completeLocationOnboarding } from '../_actions'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 
+// Define interfaces for our data types
+interface LocationItem {
+  value: string;
+  label: string;
+  fullName?: string;
+}
+interface CountryData {
+  cca2: string;
+  name: {
+    common: string;
+  };
+}
+interface StateData {
+  name: string;
+}
+interface LocationData {
+  country: string;
+  city: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+interface LoadingState {
+  countries: boolean;
+  cities: boolean;
+}
+
+const CommandWithChildren = Command as React.FC<{ children: React.ReactNode }>
+
+// Cast the command sub-components to accept arbitrary props
+const CommandInputAny = CommandInput as React.FC<any>
+const CommandEmptyAny = CommandEmpty as React.FC<any>
+const CommandGroupAny = CommandGroup as React.FC<any>
+const CommandListAny = CommandList as React.FC<any>
+// New alias for CommandItem to allow children and explicit onSelect type
+const CommandItemAny = CommandItem as React.FC<any>
 
 export default function LocationOnboardingPage() {
-  const [error, setError] = React.useState('')
-  // const [isLoading, setIsLoading] = React.useState(false)
-  const [locationData, setLocationData] = React.useState({
+  const [error, setError] = React.useState<string>('')
+  const [countries, setCountries] = React.useState<LocationItem[]>([])
+  const [cities, setCities] = React.useState<LocationItem[]>([])
+  const [loading, setLoading] = React.useState<LoadingState>({ countries: false, cities: false })
+  
+  // Combobox states
+  const [countryOpen, setCountryOpen] = React.useState<boolean>(false)
+  const [cityOpen, setCityOpen] = React.useState<boolean>(false)
+  
+  const [locationData, setLocationData] = React.useState<LocationData>({
     country: '',
     city: '',
-    latitude: null as number | null,
-    longitude: null as number | null
+    latitude: null,
+    longitude: null
   })
+  
   const { user } = useUser()
   const router = useRouter()
 
+// In your first useEffect, store both code and name
+React.useEffect(() => {
+  const fetchCountries = async () => {
+    setLoading((prevState) => ({ ...prevState, countries: true }));
+    try {
+      const response = await fetch('https://restcountries.com/v3.1/all');
+      if (!response.ok) throw new Error('Failed to fetch countries');
+      const data = await response.json();
 
-  // const handleGeolocation = async () => {
-  //   setIsLoading(true)
-    
-  //   if (!navigator.geolocation) {
-  //     setError('Geolocation is not supported by your browser')
-  //     setIsLoading(false)
-  //     return
-  //   }
-    
-  //   navigator.geolocation.getCurrentPosition(
-  //     async (position) => {
-  //       try {
-  //           const { latitude, longitude } = position.coords
-            
-  //           // Fetch city and country using OpenCage
-  //           const response = await fetch(`/api/geocode?lat=${latitude}&lng=${longitude}`)
-            
-  //           if (!response.ok) {
-  //             throw new Error('Failed to fetch location data')
-  //           }
-            
-  //           const data = await response.json()
-            
-  //           setLocationData({
-  //             country: data.country,
-  //             city: data.city,
-  //             latitude,
-  //             longitude
-  //           })
-  //           setIsLoading(false)
-  //         } catch { // Changed to _err to indicate it's intentionally unused
-  //           setError('Failed to get location details')
-  //           setIsLoading(false)
-  //         }
-  //       },
-  //       () => { // Changed to _err to indicate it's intentionally unused
-  //         setError('Unable to retrieve your location')
-  //         setIsLoading(false)
-  //       }
-  //   )
-  // }
+      // Store country name alongside the code
+      const formattedCountries = data
+        .map((country: CountryData) => ({
+          value: country.cca2,
+          label: country.name.common,
+          fullName: country.name.common // Store the full name
+        }))
+        .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label));
 
-  const handleSubmit = async (formData: FormData) => {
+      setCountries(formattedCountries);
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+      setError('Failed to load countries list');
+    } finally {
+      setLoading((prevState) => ({ ...prevState, countries: false }));
+    }
+  };
+
+  fetchCountries();
+}, []);
+
+// Then in your second useEffect, use the full name
+React.useEffect(() => {
+  const fetchCities = async () => {
+    if (!locationData.country) {
+      setCities([]);
+      return;
+    }
+    
+    setLoading((prevState) => ({ ...prevState, cities: true }));
+    try {
+      // Find the selected country's full name
+      const selectedCountry = countries.find(c => c.value === locationData.country);
+      if (!selectedCountry) {
+        throw new Error('Country not found');
+      }
+
+      const response = await fetch(
+        'https://countriesnow.space/api/v0.1/countries/states',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ country: selectedCountry.fullName }),
+        }
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch states');
+      const data = await response.json();
+
+      // Debug response
+      console.log('API response:', data);
+
+      if (!data.data || !data.data.states || !Array.isArray(data.data.states)) {
+        throw new Error('No states data found');
+      }
+
+      const formattedCities = data.data.states
+        .map((state: StateData) => ({
+          value: state.name,
+          label: state.name,
+        }))
+        .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label));
+
+      setCities(formattedCities);
+    } catch (error) {
+      console.error('Error fetching states:', error);
+      setError('Failed to load states list');
+    } finally {
+      setLoading((prevState) => ({ ...prevState, cities: false }));
+    }
+  };
+
+  if (locationData.country) {
+    fetchCities();
+  }
+}, [locationData.country, countries]); // Add countries to dependency array
+  
+  
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    // Create new FormData instance with current locationData values
+    const formData = new FormData()
+    formData.append('country', locationData.country)
+    formData.append('city', locationData.city)
+    if (locationData.latitude) formData.append('latitude', locationData.latitude.toString())
+    if (locationData.longitude) formData.append('longitude', locationData.longitude.toString())
+    
     const res = await completeLocationOnboarding(formData)
     if (res?.message) {
       // Reload user data from Clerk API
@@ -81,9 +196,9 @@ export default function LocationOnboardingPage() {
         
         <div className="mb-6">
           <button
-            // onClick={handleGeolocation}
             disabled={true}
             className="w-full py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-foreground bg-muted hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring disabled:opacity-50 cursor-not-allowed"
+            type="button"
           >
             Use my current location
           </button>
@@ -95,7 +210,7 @@ export default function LocationOnboardingPage() {
           </p>
         </div>
         
-        <form action={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label 
               htmlFor="country" 
@@ -103,15 +218,61 @@ export default function LocationOnboardingPage() {
             >
               Country
             </label>
-            <input
-              id="country"
-              name="country"
-              type="text"
-              value={locationData.country}
-              onChange={(e) => setLocationData({...locationData, country: e.target.value})}
-              className="w-full px-3 py-2 border bg-background text-foreground border-input rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
-              required
-            />
+            <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  id="country"
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={countryOpen}
+                  className="w-full justify-between"
+                  disabled={loading.countries}
+                  type="button"
+                >
+                  {locationData.country
+                    ? countries.find((country) => country.value === locationData.country)?.label || "Select country..."
+                    : "Select country..."}
+                  {loading.countries ? (
+                    <span className="ml-auto animate-spin">○</span>
+                  ) : (
+                    <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start">
+                <CommandWithChildren>
+                  <CommandInputAny placeholder="Search country..." />
+                  <CommandListAny>
+                    <CommandEmptyAny>No country found.</CommandEmptyAny>
+                    <CommandGroupAny>
+                      {countries.map((country) => (
+                        <CommandItemAny
+                          key={country.value}
+                          value={country.value}
+                          onSelect={(currentValue: string) => { // explicit type for parameter
+                            const newValue = currentValue === locationData.country ? "" : currentValue
+                            setLocationData({
+                              ...locationData, 
+                              country: newValue,
+                              city: "" // Reset city when country changes
+                            })
+                            setCountryOpen(false)
+                          }}
+                        >
+                          {country.label}
+                          <Check
+                            className={cn(
+                              "ml-auto",
+                              locationData.country === country.value ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                        </CommandItemAny>
+                      ))}
+                    </CommandGroupAny>
+                  </CommandListAny>
+                </CommandWithChildren>
+              </PopoverContent>
+            </Popover>
           </div>
           
           <div>
@@ -121,32 +282,77 @@ export default function LocationOnboardingPage() {
             >
               City
             </label>
-            <input
-              id="city"
-              name="city"
-              type="text"
-              value={locationData.city}
-              onChange={(e) => setLocationData({...locationData, city: e.target.value})}
-              className="w-full px-3 py-2 border bg-background text-foreground border-input rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
-              required
-            />
+            <Popover open={cityOpen} onOpenChange={setCityOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  id="city"
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={cityOpen}
+                  className="w-full justify-between"
+                  disabled={!locationData.country || loading.cities}
+                  type="button"
+                >
+                  {locationData.city
+                    ? cities.find((city) => city.value === locationData.city)?.label || "Select city..."
+                    : "Select city..."}
+                  {loading.cities ? (
+                    <span className="ml-auto animate-spin">○</span>
+                  ) : (
+                    <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start">
+                <CommandWithChildren>
+                  <CommandInputAny placeholder="Search city..." />
+                  <CommandListAny>
+                    <CommandEmptyAny>No city found.</CommandEmptyAny>
+                    <CommandGroupAny>
+                      {cities.map((city) => (
+                        <CommandItemAny
+                          key={city.value}
+                          value={city.value}
+                          onSelect={(currentValue: string) => {
+                            setLocationData({
+                              ...locationData, 
+                              city: currentValue === locationData.city ? "" : currentValue
+                            })
+                            setCityOpen(false)
+                          }}
+                        >
+                          {city.label}
+                          <Check
+                            className={cn(
+                              "ml-auto",
+                              locationData.city === city.value ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                        </CommandItemAny>
+                      ))}
+                    </CommandGroupAny>
+                  </CommandListAny>
+                </CommandWithChildren>
+              </PopoverContent>
+            </Popover>
           </div>
           
           {/* Hidden fields to pass coordinates if available */}
-          <input type="hidden" name="latitude" value={locationData.latitude || ''} />
-          <input type="hidden" name="longitude" value={locationData.longitude || ''} />
+          <input type="hidden" name="latitude" value={locationData.latitude?.toString() || ''} />
+          <input type="hidden" name="longitude" value={locationData.longitude?.toString() || ''} />
 
           {error && (
             <p className="text-destructive text-sm">Error: {error}</p>
           )}
 
           <div className="flex justify-end">
-            <button
+            <Button
               type="submit"
+              disabled={!locationData.country || !locationData.city}
               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
             >
               Complete Onboarding
-            </button>
+            </Button>
           </div>
         </form>
       </div>
