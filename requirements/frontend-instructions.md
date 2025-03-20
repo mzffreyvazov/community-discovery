@@ -123,37 +123,87 @@ Location information
 # Relevant docs
 
 # Current file structure
-COMMUNITY-DISCOVERY/
-├── .next/
-├── app/
-│   ├── favicon.ico
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
-├── components/
-│   └── ui/
-│       ├── alert.tsx
-│       ├── button.tsx
-│       ├── card.tsx
-│       ├── carousel.tsx
-│       ├── form.tsx
-│       ├── input.tsx
-│       └── label.tsx
-├── lib/
-├── node_modules/
-├── public/
-├── requirements/
-│   └── frontend-instructions.md
-├── .gitignore
-├── components.json
-├── eslint.config.mjs
-├── next-env.d.ts
-├── next.config.ts
-├── package-lock.json
-├── package.json
-├── postcss.config.mjs
-├── README.md
-└── tsconfig.json
+.
+├── community-discovery
+│   ├── .next
+│   ├── app
+│   │   ├── api
+│   │   │   ├── geocode
+│   │   │   │   └── route.ts
+│   │   │   └── user
+│   │   │       ├── location
+│   │   │       │   └── route.ts
+│   │   │       ├── profile
+│   │   │       │   └── route.ts
+│   │   │       └── users
+│   │   │           └── route.ts
+│   │   ├── discover
+│   │   │   ├── page.tsx
+│   │   │   ├── onboarding
+│   │   │   │   ├── location
+│   │   │   │   │   ├── page.tsx
+│   │   │   │   │   ├── actions.ts
+│   │   │   │   │   ├── layout.tsx
+│   │   │   │   │   └── page.tsx
+│   │   │   ├── sign-in/[[...sign-in]]
+│   │   │   │   ├── page.tsx
+│   │   │   ├── sign-up/[[...sign-up]]
+│   │   │   │   ├── page.tsx
+│   │   │   ├── favicon.ico
+│   │   │   ├── globals.css
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── components
+│   │   ├── components
+│   │   │   ├── ui
+│   │   │   │   ├── alert.tsx
+│   │   │   │   ├── avatar.tsx
+│   │   │   │   ├── button.tsx
+│   │   │   │   ├── card.tsx
+│   │   │   │   ├── carousel.tsx
+│   │   │   │   ├── command.tsx
+│   │   │   │   ├── dialog.tsx
+│   │   │   │   ├── dropdown-menu.tsx
+│   │   │   │   ├── form.tsx
+│   │   │   │   ├── headers.tsx
+│   │   │   │   ├── input.tsx
+│   │   │   │   ├── label.tsx
+│   │   │   │   ├── popover.tsx
+│   │   │   │   ├── textarea.tsx
+│   │   │   │   ├── CategoryNav.tsx
+│   │   │   │   ├── CategoryScroll.tsx
+│   │   │   │   ├── CommunityCard.tsx
+│   │   │   │   ├── FilterTabs.tsx
+│   │   │   │   ├── headers.tsx
+│   │   │   │   ├── theme-provider.tsx
+│   │   │   │   ├── UserInfoFormOnboarding.tsx
+│   │   │   │   └── UserProfileInitializer.tsx
+│   │   ├── lib
+│   │   │   ├── supabase.ts
+│   │   │   └── utils.ts
+│   │   ├── node_modules
+│   │   └── public
+│   ├── requirements
+│   │   ├── backend-instructions.md
+│   │   ├── clerk-documentation-onboarding.pdf
+│   │   ├── frontend-instructions.md
+│   │   └── todo.md
+│   ├── types
+│   │   └── globals.d.ts
+│   ├── utils
+│   │   └── env.local
+│   ├── .gitignore
+│   ├── components.json
+│   ├── eslint.config.mjs
+│   ├── middleware.ts
+│   ├── next-env.d.ts
+│   ├── next.config.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   ├── README.md
+│   ├── tailwind.config.js
+│   └── tsconfig.json
 
 # Rules
 - All new components should go in /components and be named like example-component.tsx unless otherwise specified
