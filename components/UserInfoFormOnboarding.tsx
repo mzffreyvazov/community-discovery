@@ -3,7 +3,6 @@
 import * as React from "react"
 import { Camera } from "lucide-react"
 import Image from "next/image"
-import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
