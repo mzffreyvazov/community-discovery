@@ -203,21 +203,19 @@ const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     if (locationData.latitude) formData.append('latitude', locationData.latitude.toString())
     if (locationData.longitude) formData.append('longitude', locationData.longitude.toString())
     
-    const res = await completeLocationOnboarding(formData)
-    if (res?.message) {
-      // Reload user data from Clerk API
+    const response = await completeLocationOnboarding(formData)
+    if (response?.message) {
       await user?.reload()
-      // Don't set loading to false here, let it continue until redirect
       router.push('/discover')
-      return // Exit early to keep loading state
+      return
     }
-    if (res?.error) {
-      setError(res?.error)
-      setIsLoading(false) // Only set to false if there's an error
+    if (response?.error) {
+      setError(response.error)
+      setIsLoading(false)
     }
-  } catch (error) {
+  } catch {
     setError('An unexpected error occurred')
-    setIsLoading(false) // Set to false if there's an exception
+    setIsLoading(false)
   }
 }
 
