@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { fetchInterests } from "@/lib/supabase"
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface InterestTag {
   id: string
@@ -25,10 +27,14 @@ interface InterestTag {
 // ]
 
 interface UserInfoFormProps extends React.HTMLAttributes<HTMLDivElement> {
-  onSave?: (data: { bio: string; interests: string[]; profilePhoto?: File }) => void
-  initialBio?: string
-  initialInterests?: string[]
-}
+    onSave?: (data: { 
+      bio: string; 
+      interests: string[]; 
+      profilePhoto?: File 
+    }) => Promise<{ success?: boolean; error?: string } | void>
+    initialBio?: string
+    initialInterests?: string[]
+  }
 
 export function UserInfoForm({
   className,
@@ -37,12 +43,14 @@ export function UserInfoForm({
   initialInterests = [],
   ...props
 }: UserInfoFormProps) {
+  const router = useRouter()
   const [interests, setInterests] = React.useState<InterestTag[]>([])
   const [bio, setBio] = React.useState(initialBio)
   const [selectedInterests, setSelectedInterests] = React.useState<string[]>(initialInterests)
   const [profilePhoto, setProfilePhoto] = React.useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = React.useState<string | null>(null)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
+  const [isLoading, setIsLoading] = React.useState(false)
 
     // Fetch interests when component mounts
     React.useEffect(() => {
@@ -79,13 +87,30 @@ export function UserInfoForm({
 //     }
 //   }
 
-  const handleSave = () => {
+const handleSave = async () => {
     if (onSave) {
-      onSave({
-        bio,
-        interests: selectedInterests,
-        profilePhoto: profilePhoto || undefined,
-      })
+      setIsLoading(true)
+      try {
+        const result = await onSave({
+          bio,
+          interests: selectedInterests,
+          profilePhoto: profilePhoto || undefined,
+        })
+        
+        // If successful, let the loading state continue until navigation
+        if (result?.success) {
+          await new Promise(() => {
+            router.push('/onboarding/location')
+          }) // or whatever your next route is
+          return // Exit early to maintain loading state
+        }
+        
+        // Only set loading to false if there was an error or no success
+        setIsLoading(false)
+      } catch (error) {
+        console.error('Error saving user info:', error)
+        setIsLoading(false)
+      }
     }
   }
 
@@ -161,8 +186,16 @@ export function UserInfoForm({
         <Button 
           onClick={handleSave} 
           className="w-full cursor-pointer"
+          disabled={isLoading}
         >
-          Continue
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Please wait
+            </>
+          ) : (
+            "Continue"
+          )}
         </Button>
       </div>
     </div>

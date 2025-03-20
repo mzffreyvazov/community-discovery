@@ -8,7 +8,7 @@ export default function SignUpPage() {
   const { theme } = useTheme();
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="flex items-center justify-center px-4">
       <SignUp 
         appearance={{
           baseTheme: theme === 'dark' ? dark : undefined,

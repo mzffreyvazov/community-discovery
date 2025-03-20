@@ -8,7 +8,7 @@ export default function SignInPage() {
   const { theme } = useTheme();
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="flex items-center justify-center px-4">
       <SignIn 
         appearance={{
           baseTheme: theme === 'dark' ? dark : undefined,

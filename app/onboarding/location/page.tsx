@@ -2,11 +2,12 @@
 'use client'
 
 import * as React from 'react'
-import { Check, ChevronsUpDown } from 'lucide-react'
+import { Check, ChevronsUpDown, Loader2} from 'lucide-react'
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { completeLocationOnboarding } from '../_actions'
 import { cn } from '@/lib/utils'
+
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -87,7 +88,7 @@ export default function LocationOnboardingPage() {
   const [countries, setCountries] = React.useState<LocationItem[]>([])
   const [cities, setCities] = React.useState<LocationItem[]>([])
   const [loading, setLoading] = React.useState<LoadingState>({ countries: false, cities: false })
-  
+  const [isLoading, setIsLoading] = React.useState(false)
   // Combobox states
   const [countryOpen, setCountryOpen] = React.useState<boolean>(false)
   const [cityOpen, setCityOpen] = React.useState<boolean>(false)
@@ -192,9 +193,10 @@ React.useEffect(() => {
   
   
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    // Create new FormData instance with current locationData values
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+  setIsLoading(true)
+  try {
     const formData = new FormData()
     formData.append('country', locationData.country)
     formData.append('city', locationData.city)
@@ -205,12 +207,19 @@ React.useEffect(() => {
     if (res?.message) {
       // Reload user data from Clerk API
       await user?.reload()
+      // Don't set loading to false here, let it continue until redirect
       router.push('/discover')
+      return // Exit early to keep loading state
     }
     if (res?.error) {
       setError(res?.error)
+      setIsLoading(false) // Only set to false if there's an error
     }
+  } catch (error) {
+    setError('An unexpected error occurred')
+    setIsLoading(false) // Set to false if there's an exception
   }
+}
 
   return (
     <div className="flex flex-col items-center justify-center p-4 bg-background">
@@ -371,10 +380,17 @@ React.useEffect(() => {
           <div className="flex justify-end">
             <Button
               type="submit"
-              disabled={!locationData.country || !locationData.city}
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer"
+              disabled={!locationData.country || !locationData.city || isLoading}
+              className="inline-flex justify-center cursor-pointer py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer"
             >
-              Complete Onboarding
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </>
+              ) : (
+                "Complete Onboarding"
+              )}
             </Button>
           </div>
         </form>
