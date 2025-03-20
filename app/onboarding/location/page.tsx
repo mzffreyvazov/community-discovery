@@ -102,7 +102,7 @@ export default function LocationOnboardingPage() {
   const { user } = useUser()
   const router = useRouter()
 
-// In your first useEffect, store both code and name
+// first useEffect
 React.useEffect(() => {
   const fetchCountries = async () => {
     setLoading((prevState) => ({ ...prevState, countries: true }));
@@ -132,7 +132,7 @@ React.useEffect(() => {
   fetchCountries();
 }, []);
 
-// Then in your second useEffect, use the full name
+// second useEffect
 React.useEffect(() => {
   const fetchCities = async () => {
     if (!locationData.country) {
@@ -213,7 +213,7 @@ React.useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
+    <div className="flex flex-col items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md bg-card rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-bold text-center mb-6 text-foreground">Where are you located?</h1>
         
@@ -372,7 +372,7 @@ React.useEffect(() => {
             <Button
               type="submit"
               disabled={!locationData.country || !locationData.city}
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring cursor-pointer"
             >
               Complete Onboarding
             </Button>

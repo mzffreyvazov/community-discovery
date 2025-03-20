@@ -29,3 +29,27 @@ export const createBrowserClient = () => {
   
   return createClient(supabaseUrl, supabaseAnonKey);
 };
+
+// Fetching interests from tags table
+interface Interest {
+  id: string;
+  label: string;
+}
+
+export async function fetchInterests(): Promise<Interest[]> {
+  const supabase = createBrowserClient();
+  const { data, error } = await supabase
+    .from('tags')
+    .select('id, name')
+    .order('name');
+
+  if (error) {
+    console.error('Error fetching interests:', error);
+    return [];
+  }
+
+  return data.map(interest => ({
+    id: interest.id.toString(),
+    label: interest.name
+  }));
+}

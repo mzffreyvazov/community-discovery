@@ -1,52 +1,88 @@
 'use server'
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
-
+import { createAdminClient } from "@/lib/supabase";
 // app/onboarding/_actions.ts
 export async function completeOnboarding(formData: FormData) {
-    try {
-      const { userId, getToken } = await auth();
-      if (!userId) {
-        return { error: "Unauthorized" };
-      }
-  
-      const bio = formData.get('bio') as string;
-      const client = await clerkClient();
-  
-      // Get the session token
-      const token = await getToken();
-  
-      // Update user metadata with bio
-      await client.users.updateUser(userId, {
-        unsafeMetadata: {
-          bio,
-        },
-        publicMetadata: {
-          onboardingBioComplete: true  // Track bio completion separately
-        }
-      });
-  
-      // Update Supabase using the API route
-      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/user/profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ bio }),
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update bio in Supabase');
-      }
-  
-      return { message: "Bio updated successfully" };
-    } catch (error) {
-      console.error("Onboarding error:", error);
-      return { error: "Failed to complete onboarding" };
+  try {
+    const { userId, getToken } = await auth();
+    if (!userId) {
+      return { error: "Unauthorized" };
     }
+
+    const bio = formData.get('bio') as string;
+    const interestsString = formData.get('interests') as string;
+    const interests = interestsString ? JSON.parse(interestsString) : [];
+    const client = await clerkClient();
+    const token = await getToken();
+    
+    // Update user metadata with bio and interests in Clerk
+    await client.users.updateUser(userId, {
+      unsafeMetadata: {
+        bio,
+      },
+      publicMetadata: {
+        onboardingBioComplete: true,
+        interests: interests // Store interests in Clerk metadata
+      }
+    });
+
+    // Update Supabase profile
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/user/profile`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ bio }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update bio in Supabase');
+    }
+
+    // Update user tags in Supabase
+    const supabase = createAdminClient();
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('useri_id')  // Using useri_id as specified
+      .eq('clerk_user_id', userId)
+      .single();
+    
+    if (userError || !userData) {
+      console.error('User lookup error:', userError);
+      throw new Error('Failed to find user in database');
+    }
+    
+    const numericUserId = userData.useri_id;
+    
+    // Then insert new user tags
+    if (interests && interests.length > 0) {
+      const userTags = interests.map((tagId: string) => ({
+        user_id: numericUserId,
+        tag_id: parseInt(tagId)
+      }));
+
+      console.log('Inserting tags:', userTags);
+
+      const { error: tagError } = await supabase
+        .from('user_tags')
+        .insert(userTags);
+
+      if (tagError) {
+        console.error('Tag insert error:', tagError);
+        throw new Error(`Failed to insert tags: ${tagError.message}`);
+      }
+    }
+
+    return { message: "Profile updated successfully" };
+  } catch (error) {
+    console.error("Onboarding error:", error);
+    return { 
+      error: error instanceof Error ? error.message : "Failed to complete onboarding" 
+    };
   }
+}
 
 // app/onboarding/_actions.ts - Add this function
 // app/onboarding/_actions.ts - completeLocationOnboarding function
