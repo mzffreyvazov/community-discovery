@@ -17,8 +17,7 @@ export default async function Home() {
       <section className="w-full py-20 px-4 sm:px-20 bg-gradient-to-b from-background to-secondary/20">
         <div className="container max-w-6xl mx-auto text-center">
           <h1 className="text-4xl sm:text-6xl font-bold mb-6">
-            Mustafa Sen Petuxsan, <br />
-            Build Real Connections
+            Mustafa Sen Petuxsan<br />
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Join vibrant communities and meet people who share your interests.
