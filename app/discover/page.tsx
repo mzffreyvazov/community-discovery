@@ -1,7 +1,7 @@
 import { createAdminClient } from '@/lib/supabase'
 import { Search } from 'lucide-react'
 import { CategoryScroll } from '@/components/CategoryScroll'
-
+import { CreateCommunityButton } from '@/components/community-creation/create-community-button'
 // Add these interfaces at the top of your file
 interface Tag {
   id: string;
@@ -48,9 +48,7 @@ export default async function DiscoverPage() {
               Find and join communities that match your interests and location
             </p>
           </div>
-          <button className="bg-black text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black/80 transition-colors w-full sm:w-auto mt-4 sm:mt-0">
-            + Create Community
-          </button>
+            <CreateCommunityButton />
         </div>
 
         {/* Search and Filters Row - remains the same */} 

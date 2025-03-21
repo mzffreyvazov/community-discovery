@@ -144,3 +144,36 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+@layer utilities {
+  .tab-content-animation {
+    @apply transition-all duration-300 transform;
+  }
+
+  .tab-content-enter {
+    @apply opacity-0 translate-x-4;
+  }
+
+  .tab-content-enter-active {
+    @apply opacity-100 translate-x-0;
+  }
+
+  .tab-content-exit {
+    @apply opacity-100 translate-x-0;
+  }
+
+  .tab-content-exit-active {
+    @apply opacity-0 -translate-x-4;
+  }
+  .tabs-list {
+    @apply relative bg-muted/20 rounded-lg p-1;
+  }
+
+  .tab-trigger {
+    @apply relative z-10 transition-colors duration-300;
+  }
+
+  .tab-pill {
+    @apply absolute h-[85%] top-[7.5%] rounded-md bg-white dark:bg-slate-800 shadow-sm;
+  }
+}
