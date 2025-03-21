@@ -1,0 +1,257 @@
+"use client"
+
+import type React from "react"
+import { useState } from "react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Badge } from "@/components/ui/badge"
+import { X, ImagePlus, Check, ChevronsUpDown, Loader2 } from "lucide-react"
+import type { CommunityData } from "./create-community-modal"
+import { Button } from "@/components/ui/button"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
+
+interface LocationItem {
+  value: string
+  label: string
+  fullName?: string
+}
+
+interface LoadingState {
+  countries: boolean
+  cities: boolean
+}
+
+interface CommunityBasicInfoProps {
+  data: CommunityData
+  updateData: (data: Partial<CommunityData>) => void
+  countries: LocationItem[]
+  cities: LocationItem[]
+  loading: LoadingState
+  countryOpen: boolean
+  setCountryOpen: (open: boolean) => void
+  cityOpen: boolean
+  setCityOpen: (open: boolean) => void
+}
+
+export function CommunityBasicInfo({
+  data,
+  updateData,
+  countries,
+  cities,
+  loading,
+  countryOpen,
+  setCountryOpen,
+  cityOpen,
+  setCityOpen,
+}: CommunityBasicInfoProps) {
+  const [tagInput, setTagInput] = useState("")
+
+  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && tagInput.trim()) {
+      e.preventDefault()
+      if (!data.tags.includes(tagInput.trim())) {
+        updateData({ tags: [...data.tags, tagInput.trim()] })
+      }
+      setTagInput("")
+    }
+  }
+
+  const handleRemoveTag = (tag: string) => {
+    updateData({ tags: data.tags.filter((t) => t !== tag) })
+  }
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (event) => {
+        updateData({ image: event.target?.result as string })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="name">Community Name</Label>
+        <Input
+          id="name"
+          value={data.name}
+          onChange={(e) => updateData({ name: e.target.value })}
+          placeholder="Enter community name"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="description">What is this community for?</Label>
+        <Textarea
+          id="description"
+          value={data.description}
+          onChange={(e) => updateData({ description: e.target.value })}
+          placeholder="Describe your community's purpose"
+          rows={3}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="country">Country</Label>
+          <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={countryOpen}
+                className="w-full justify-between"
+                disabled={loading.countries}
+              >
+                {loading.countries ? (
+                  <div className="flex items-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Loading...
+                  </div>
+                ) : data.country ? (
+                  countries.find((country) => country.value === data.country)?.label || "Select country..."
+                ) : (
+                  "Select country..."
+                )}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Search country..." />
+                <CommandList>
+                  <CommandEmpty>No country found.</CommandEmpty>
+                  <CommandGroup>
+                    {countries.map((country) => (
+                      <CommandItem
+                        key={country.value}
+                        value={country.value}
+                        onSelect={() => {
+                          updateData({
+                            country: country.value,
+                            // Clear city if country changes
+                            city: "",
+                          })
+                          setCountryOpen(false)
+                        }}
+                      >
+                        <Check
+                          className={cn("mr-2 h-4 w-4", data.country === country.value ? "opacity-100" : "opacity-0")}
+                        />
+                        {country.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="city">City/State</Label>
+          <Popover open={cityOpen} onOpenChange={setCityOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={cityOpen}
+                className="w-full justify-between"
+                disabled={!data.country || loading.cities}
+              >
+                {loading.cities ? (
+                  <div className="flex items-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Loading...
+                  </div>
+                ) : data.city ? (
+                  cities.find((city) => city.value === data.city)?.label || "Select city/state..."
+                ) : (
+                  "Select city/state..."
+                )}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandInput placeholder="Search city/state..." />
+                <CommandList>
+                  <CommandEmpty>No city/state found.</CommandEmpty>
+                  <CommandGroup>
+                    {cities.map((city) => (
+                      <CommandItem
+                        key={city.value}
+                        value={city.value}
+                        onSelect={() => {
+                          updateData({ city: city.value })
+                          setCityOpen(false)
+                        }}
+                      >
+                        <Check className={cn("mr-2 h-4 w-4", data.city === city.value ? "opacity-100" : "opacity-0")} />
+                        {city.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="tags">Tags (Press Enter to add)</Label>
+        <Input
+          id="tags"
+          value={tagInput}
+          onChange={(e) => setTagInput(e.target.value)}
+          onKeyDown={handleAddTag}
+          placeholder="Add tags to help people find your community"
+        />
+
+        <div className="flex flex-wrap gap-2 mt-2">
+          {data.tags.map((tag) => (
+            <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+              {tag}
+              <X className="h-3 w-3 cursor-pointer" onClick={() => handleRemoveTag(tag)} />
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Community Image</Label>
+        <div className="flex items-center gap-4">
+          <div
+            className="w-24 h-24 border rounded-md flex items-center justify-center overflow-hidden"
+            style={{ background: "#f1f5f9" }}
+          >
+            {data.image ? (
+              <img src={data.image || "/placeholder.svg"} alt="Community" className="w-full h-full object-cover" />
+            ) : (
+              <ImagePlus className="h-8 w-8 text-muted-foreground" />
+            )}
+          </div>
+
+          <div>
+            <Label
+              htmlFor="image-upload"
+              className="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Upload Image
+            </Label>
+            <Input id="image-upload" type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+            <p className="text-sm text-muted-foreground mt-1">Recommended size: 512x512px</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
