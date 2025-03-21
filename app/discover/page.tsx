@@ -48,7 +48,7 @@ export default async function DiscoverPage() {
               Find and join communities that match your interests and location
             </p>
           </div>
-          <button className="bg-black text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black/80 transition-colors w-full sm:w-auto mt-4 sm:mt-0">
+          <button className="bg-black text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black/80 active:bg-white active:text-black transition-colors w-full sm:w-auto mt-4 sm:mt-0">
             + Create Community
           </button>
         </div>
@@ -63,10 +63,10 @@ export default async function DiscoverPage() {
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-          <button className="w-full sm:w-auto px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-secondary/20 transition-colors">
+          <button className="w-full sm:w-auto px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-secondary/20 active:bg-black active:text-white transition-colors">
             Filters
           </button>
-          <button className="w-full sm:w-auto px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-secondary/20 transition-colors">
+          <button className="w-full sm:w-auto px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-secondary/20 active:bg-black active:text-white transition-colors">
             Near Me
           </button>
         </div>
@@ -88,8 +88,8 @@ export default async function DiscoverPage() {
                 key={tab}
                 className={`pb-2 px-1 ${
                   tab === 'All Communities'
-                    ? 'border-b-2 border-black font-medium'
-                    : 'text-muted-foreground hover:text-foreground transition-colors'
+                    ? 'border-b-2 border-black font-medium active:bg-black active:text-white'
+                    : 'text-muted-foreground hover:text-foreground active:bg-black active:text-white transition-colors'
                 }`}
               >
                 {tab}
@@ -140,7 +140,7 @@ export default async function DiscoverPage() {
                 <span className="text-muted-foreground">
                   {community.city || 'Global'}
                 </span>
-                <button className="text-primary hover:underline">
+                <button className="text-primary hover:underline active:bg-primary active:text-white rounded px-2 transition-colors">
                   View Details →
                 </button>
               </div>
