@@ -34,6 +34,7 @@ interface CommunityBasicInfoProps {
   setCountryOpen: (open: boolean) => void
   cityOpen: boolean
   setCityOpen: (open: boolean) => void
+  onImageUpload: (file: File) => void;
 }
 
 export function CommunityBasicInfo({
