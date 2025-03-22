@@ -59,13 +59,13 @@ export function CommunityChatRooms({ data, updateData }: CommunityChatRoomsProps
 
             <div className="w-32">
               <Select value={room.type} onValueChange={(value) => updateChatRoom(index, "type", value)}>
-                <SelectTrigger>
+                <SelectTrigger className="cursor-pointer">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="text">Text</SelectItem>
-                  <SelectItem value="voice">Voice</SelectItem>
-                  <SelectItem value="video">Video</SelectItem>
+                  <SelectItem className="cursor-pointer" value="text">Text</SelectItem>
+                  <SelectItem className="cursor-pointer" value="voice">Voice</SelectItem>
+                  <SelectItem className="cursor-pointer" value="video">Video</SelectItem>
                 </SelectContent>
               </Select>
             </div>

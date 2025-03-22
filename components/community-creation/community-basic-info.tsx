@@ -126,7 +126,7 @@ export function CommunityBasicInfo({
                 aria-expanded={countryOpen}
                 disabled={loading.countries}
                 className={cn(
-                  "w-full justify-between",
+                  "cursor-pointer w-full justify-between",
                   validationErrors.country && "border-red-500"
                 )}
               >
@@ -161,6 +161,7 @@ export function CommunityBasicInfo({
                           })
                           setCountryOpen(false)
                         }}
+                        className="cursor-pointer"
                       >
                         <Check
                           className={cn("mr-2 h-4 w-4", data.country === country.value ? "opacity-100" : "opacity-0")}
@@ -187,12 +188,12 @@ export function CommunityBasicInfo({
                 aria-expanded={cityOpen}
                 disabled={!data.country || loading.cities}
                 className={cn(
-                  "w-full justify-between",
+                  "cursor-pointer w-full justify-between",
                   validationErrors.city && "border-red-500"
                 )}
               >
                 {loading.cities ? (
-                  <div className="flex items-center">
+                  <div className=" cursor-pointer flex items-center">
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Loading...
                   </div>
@@ -218,6 +219,7 @@ export function CommunityBasicInfo({
                           updateData({ city: city.value })
                           setCityOpen(false)
                         }}
+                        className="cursor-pointer"
                       >
                         <Check className={cn("mr-2 h-4 w-4", data.city === city.value ? "opacity-100" : "opacity-0")} />
                         {city.label}
@@ -250,9 +252,9 @@ export function CommunityBasicInfo({
 
         <div className="flex flex-wrap gap-2 mt-2">
           {data.tags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+            <Badge key={tag} variant="secondary" className="flex items-center gap-1 group">
               {tag}
-              <X className="h-3 w-3 cursor-pointer" onClick={() => handleRemoveTag(tag)} />
+              <X className="h-3 w-3 cursor-pointer hover:text-red-500 transition-colors" onClick={() => handleRemoveTag(tag)} />
             </Badge>
           ))}
         </div>
@@ -275,7 +277,7 @@ export function CommunityBasicInfo({
           <div>
             <Label
               htmlFor="image-upload"
-              className="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              className="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
             >
               Upload Image
             </Label>

@@ -27,6 +27,7 @@ export function CommunitySettings({ data, updateData }: CommunitySettingsProps) 
           </div>
           <Switch
             id="private-community"
+            className="cursor-pointer"
             checked={data.isPrivate}
             onCheckedChange={(checked) => updateData({ isPrivate: checked })}
           />

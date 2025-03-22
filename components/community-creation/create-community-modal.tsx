@@ -210,6 +210,23 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
     }
   }, [communityData.country, countries])
 
+  // Add reset function
+  const resetForm = () => {
+    setCommunityData(defaultCommunityData)
+    setActiveTab("basic-info")
+    setImageFile(null)
+    setValidationErrors({})
+    setCities([])
+  }
+
+  // Handle dialog close
+  const handleDialogClose = (open: boolean) => {
+    if (!open) {
+      resetForm()
+      onClose()
+    }
+  }
+
   const handleSave = async () => {
     // Validate required fields
     if (!communityData.name.trim()) {
@@ -277,14 +294,12 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
       toast.success("Your community has been created successfully!")
 
       // Close the modal and reset form
+      resetForm()
       onClose()
       router.refresh();
       setTimeout(() => {
         router.refresh();
       }, 300);
-      setCommunityData(defaultCommunityData)
-      setActiveTab("basic-info")
-      setImageFile(null)
     } catch (error) {
       console.error("Error saving community:", error)
       toast.error(error instanceof Error ? error.message : "Failed to create community. Please try again.")
@@ -356,7 +371,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={handleDialogClose}>
       <DialogContent className="sm:max-w-[600px] flex flex-col max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Create Community</DialogTitle>
@@ -395,25 +410,25 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
                 style={{ width: "33.333%" }}
               />
 
-              {/* Tab buttons */}
+              {/* Tab buttons with enhanced hover states */}
               <button
                 onClick={() => setActiveTab("basic-info")}
                 className={`cursor-pointer flex-1 py-2 z-20 relative text-sm font-medium transition-colors rounded-md
-                  ${activeTab === "basic-info" ? "text-foreground" : "text-muted-foreground"}`}
+                  ${activeTab === "basic-info" ? "text-foreground hover:text-foreground" : "text-muted-foreground hover:text-foreground/80"}`}
               >
                 Basic Info
               </button>
               <button
                 onClick={() => setActiveTab("chat-rooms")}
                 className={`cursor-pointer flex-1 py-2 z-10 relative text-sm font-medium transition-colors rounded-md
-                  ${activeTab === "chat-rooms" ? "text-foreground" : "text-muted-foreground"}`}
+                  ${activeTab === "chat-rooms" ? "text-foreground hover:text-foreground" : "text-muted-foreground hover:text-foreground/80"}`}
               >
                 Chat Rooms
               </button>
               <button
                 onClick={() => setActiveTab("settings")}
                 className={`cursor-pointer flex-1 py-2 z-10 relative text-sm font-medium transition-colors rounded-md
-                  ${activeTab === "settings" ? "text-foreground" : "text-muted-foreground"}`}
+                  ${activeTab === "settings" ? "text-foreground hover:text-foreground" : "text-muted-foreground hover:text-foreground/80"}`}
               >
                 Settings
               </button>
