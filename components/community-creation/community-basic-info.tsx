@@ -256,9 +256,23 @@ export function CommunityBasicInfo({
 
         <div className="flex flex-wrap gap-2 mt-2">
           {data.tags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="flex items-center gap-1 group">
+            <Badge 
+              key={tag} 
+              variant="secondary" 
+              className="flex items-center gap-1.5 py-1.5 px-3 text-sm group"
+            >
               {tag}
-              <X className="h-3 w-3 cursor-pointer hover:text-red-500 transition-colors" onClick={() => handleRemoveTag(tag)} />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemoveTag(tag);
+                }}
+                className="focus:outline-none rounded-full h-5 w-5 inline-flex items-center justify-center hover:bg-muted/80 transition-colors"
+                aria-label={`Remove ${tag} tag`}
+              >
+                <X className="h-3 w-3 cursor-pointer hover:text-red-500 transition-colors" />
+              </button>
             </Badge>
           ))}
         </div>
