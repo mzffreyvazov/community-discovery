@@ -143,33 +143,35 @@ export function CommunityBasicInfo({
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-              <Command>
+            <PopoverContent className="w-full p-0 max-h-[300px]">
+              <Command className="w-full">
                 <CommandInput placeholder="Search country..." />
-                <CommandList>
-                  <CommandEmpty>No country found.</CommandEmpty>
-                  <CommandGroup>
-                    {countries.map((country) => (
-                      <CommandItem
-                        key={country.value}
-                        value={country.value}
-                        onSelect={() => {
-                          updateData({
-                            country: country.value,
-                            // Clear city if country changes
-                            city: "",
-                          })
-                          setCountryOpen(false)
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <Check
-                          className={cn("mr-2 h-4 w-4", data.country === country.value ? "opacity-100" : "opacity-0")}
-                        />
-                        {country.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                <CommandList className="max-h-[232px] overflow-y-auto scrollbar-thin">
+                  <div className="touch-auto pointer-events-auto">
+                    <CommandEmpty>No country found.</CommandEmpty>
+                    <CommandGroup>
+                      {countries.map((country) => (
+                        <CommandItem
+                          key={country.value}
+                          value={country.value}
+                          onSelect={() => {
+                            updateData({
+                              country: country.value,
+                              // Clear city if country changes
+                              city: "",
+                            })
+                            setCountryOpen(false)
+                          }}
+                          className="cursor-pointer"
+                        >
+                          <Check
+                            className={cn("mr-2 h-4 w-4", data.country === country.value ? "opacity-100" : "opacity-0")}
+                          />
+                          {country.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </div>
                 </CommandList>
               </Command>
             </PopoverContent>
@@ -205,27 +207,29 @@ export function CommunityBasicInfo({
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-              <Command>
+            <PopoverContent className="w-full p-0 max-h-[300px]">
+              <Command className="w-full">
                 <CommandInput placeholder="Search city/state..." />
-                <CommandList>
-                  <CommandEmpty>No city/state found.</CommandEmpty>
-                  <CommandGroup>
-                    {cities.map((city) => (
-                      <CommandItem
-                        key={city.value}
-                        value={city.value}
-                        onSelect={() => {
-                          updateData({ city: city.value })
-                          setCityOpen(false)
-                        }}
-                        className="cursor-pointer"
-                      >
-                        <Check className={cn("mr-2 h-4 w-4", data.city === city.value ? "opacity-100" : "opacity-0")} />
-                        {city.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                <CommandList className="max-h-[232px] overflow-y-auto scrollbar-thin">
+                  <div className="touch-auto pointer-events-auto">
+                    <CommandEmpty>No city/state found.</CommandEmpty>
+                    <CommandGroup>
+                      {cities.map((city) => (
+                        <CommandItem
+                          key={city.value}
+                          value={city.value}
+                          onSelect={() => {
+                            updateData({ city: city.value })
+                            setCityOpen(false)
+                          }}
+                          className="cursor-pointer"
+                        >
+                          <Check className={cn("mr-2 h-4 w-4", data.city === city.value ? "opacity-100" : "opacity-0")} />
+                          {city.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </div>
                 </CommandList>
               </Command>
             </PopoverContent>

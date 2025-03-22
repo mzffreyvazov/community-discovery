@@ -408,7 +408,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogClose}>
-      <DialogContent className="sm:max-w-[600px] flex flex-col max-h-[90vh]">
+      <DialogContent className="sm:max-w-[600px] flex flex-col max-h-[90vh] [&>button]:cursor-pointer">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Create Community</DialogTitle>
         </DialogHeader>
@@ -525,7 +525,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
 
         <div className="flex justify-between mt-6 pt-4 border-t">
           {activeTab !== "basic-info" ? (
-            <Button variant="outline" onClick={handleBack} disabled={loading.submit}>
+            <Button variant="outline" onClick={handleBack} disabled={loading.submit} className="cursor-pointer">
               Back
             </Button>
           ) : (
@@ -533,7 +533,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
           )}
 
           {activeTab !== "settings" ? (
-            <Button onClick={handleNext} disabled={loading.submit}>Next</Button>
+            <Button onClick={handleNext} disabled={loading.submit} className="cursor-pointer">Next</Button>
           ) : (
             <Button 
               onClick={handleSave} 

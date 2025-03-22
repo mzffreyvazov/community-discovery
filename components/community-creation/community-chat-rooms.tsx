@@ -83,7 +83,7 @@ export function CommunityChatRooms({ data, updateData }: CommunityChatRoomsProps
         ))}
       </div>
 
-      <Button variant="outline" onClick={addChatRoom} className="w-full flex items-center justify-center gap-2">
+      <Button variant="outline" onClick={addChatRoom} className="cursor-pointer w-full flex items-center justify-center gap-2">
         <Plus className="h-4 w-4" />
         Add Chat Room
       </Button>
