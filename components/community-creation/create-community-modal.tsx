@@ -7,7 +7,7 @@ import { CommunityChatRooms } from "./community-chat-rooms"
 import { CommunitySettings } from "./community-settings"
 import { Button } from "@/components/ui/button"
 import { AnimatePresence, motion } from "framer-motion"
-import { createFullCommunity, getCurrentUserId, uploadCommunityImage } from "@/lib/supabase"
+import { createFullCommunity, getCurrentUserId } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 
@@ -95,8 +95,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
   const [countryOpen, setCountryOpen] = useState(false)
   const [cityOpen, setCityOpen] = useState(false)
   
-  // Keep track of the raw file for uploading
-  const [imageFile, setImageFile] = useState<File | null>(null)
+  // Remove unused imageFile state or uncomment related functionality
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({})
 
   const getScrollbarWidth = () => {
@@ -214,7 +213,6 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
   const resetForm = () => {
     setCommunityData(defaultCommunityData)
     setActiveTab("basic-info")
-    setImageFile(null)
     setValidationErrors({})
     setCities([])
   }
@@ -251,18 +249,6 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
       if (!userId) {
         throw new Error("User not found. Please sign in again.")
       }
-
-      // Prepare community data
-      // let coverImageUrl = undefined
-
-      // Upload the image if it exists
-      // if (imageFile) {
-      //   const { url, error } = await uploadCommunityImage(imageFile, userId)
-      //   if (error) {
-      //     throw new Error("Failed to upload community image.")
-      //   }
-      //   coverImageUrl = url
-      // }
 
       // Get country and city full names
       const countryName = communityData.country ? 
@@ -365,9 +351,11 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
     else if (activeTab === "settings") setActiveTab("chat-rooms")
   }
 
-  // Function to handle image upload from community-basic-info
+  // Remove or modify this function since imageFile state is unused
   const handleImageUpload = (file: File) => {
-    setImageFile(file)
+    // This function is called but doesn't do anything meaningful now
+    // We'll keep it to maintain the component interface, but it won't set imageFile anymore
+    console.log("Image uploaded, but feature currently disabled:", file.name);
   }
 
   // Add new handler for tab clicks
@@ -538,7 +526,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
             <Button 
               onClick={handleSave} 
               disabled={loading.submit}
-              className="flex items-center gap-2"
+              className="cursor-pointer flex items-center gap-2"
             >
               {loading.submit && (
                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
