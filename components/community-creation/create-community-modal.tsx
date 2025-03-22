@@ -373,52 +373,55 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
             }
           `}</style>
 
-          {/* Tabs with improved background */}
-          <div className="flex mb-6 p-1 bg-muted/20 rounded-lg relative sticky top-0 z-10">
-            {/* Add a background layer */}
-            <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background/95 backdrop-blur-sm rounded-lg" />
+          {/* Tabs section with full width coverage */}
+          <div className="sticky top-0 z-10 -mx-2 px-2 pb-6">
+            {/* Background that extends beyond the rounded corners */}
+            <div className="absolute inset-x-0 -top-4 h-[calc(100%+1rem)] bg-background" />
 
-            {/* The animated background pill */}
-            <motion.div
-              className="absolute h-[85%] top-[7.5%] rounded-md bg-white dark:bg-slate-800 shadow-sm z-0"
-              animate={{
-                left: activeTab === "basic-info" ? "0%" : activeTab === "chat-rooms" ? "33.333%" : "66.666%",
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
-                mass: 1,
-              }}
-              style={{ width: "33.333%" }}
-            />
+            {/* Tabs container */}
+            <div className="relative flex p-1 bg-muted/20 rounded-lg">
+              {/* The animated background pill */}
+              <motion.div
+                className="absolute h-[85%] top-[7.5%] rounded-md bg-white dark:bg-slate-800 shadow-sm"
+                animate={{
+                  left: activeTab === "basic-info" ? "0%" : activeTab === "chat-rooms" ? "33.333%" : "66.666%",
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                  mass: 1,
+                }}
+                style={{ width: "33.333%" }}
+              />
 
-            {/* Rest of the tabs content with increased z-index */}
-            <button
-              onClick={() => setActiveTab("basic-info")}
-              className={`cursor-pointer flex-1 py-2 z-20 relative text-sm font-medium transition-colors rounded-md
-                ${activeTab === "basic-info" ? "text-foreground" : "text-muted-foreground"}`}
-            >
-              Basic Info
-            </button>
-            <button
-              onClick={() => setActiveTab("chat-rooms")}
-              className={`cursor-pointer flex-1 py-2 z-10 relative text-sm font-medium transition-colors rounded-md
-                ${activeTab === "chat-rooms" ? "text-foreground" : "text-muted-foreground"}`}
-            >
-              Chat Rooms
-            </button>
-            <button
-              onClick={() => setActiveTab("settings")}
-              className={`cursor-pointer flex-1 py-2 z-10 relative text-sm font-medium transition-colors rounded-md
-                ${activeTab === "settings" ? "text-foreground" : "text-muted-foreground"}`}
-            >
-              Settings
-            </button>
+              {/* Tab buttons */}
+              <button
+                onClick={() => setActiveTab("basic-info")}
+                className={`cursor-pointer flex-1 py-2 z-20 relative text-sm font-medium transition-colors rounded-md
+                  ${activeTab === "basic-info" ? "text-foreground" : "text-muted-foreground"}`}
+              >
+                Basic Info
+              </button>
+              <button
+                onClick={() => setActiveTab("chat-rooms")}
+                className={`cursor-pointer flex-1 py-2 z-10 relative text-sm font-medium transition-colors rounded-md
+                  ${activeTab === "chat-rooms" ? "text-foreground" : "text-muted-foreground"}`}
+              >
+                Chat Rooms
+              </button>
+              <button
+                onClick={() => setActiveTab("settings")}
+                className={`cursor-pointer flex-1 py-2 z-10 relative text-sm font-medium transition-colors rounded-md
+                  ${activeTab === "settings" ? "text-foreground" : "text-muted-foreground"}`}
+              >
+                Settings
+              </button>
+            </div>
           </div>
 
-          {/* Tab content */}
-          <div className="relative z-0">
+          {/* Content with increased spacing from tabs */}
+          <div className="relative z-0 mt-2">
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={activeTab}
