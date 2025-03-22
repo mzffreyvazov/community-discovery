@@ -253,16 +253,16 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
       }
 
       // Prepare community data
-      let coverImageUrl = undefined
+      // let coverImageUrl = undefined
 
       // Upload the image if it exists
-      if (imageFile) {
-        const { url, error } = await uploadCommunityImage(imageFile, userId)
-        if (error) {
-          throw new Error("Failed to upload community image.")
-        }
-        coverImageUrl = url
-      }
+      // if (imageFile) {
+      //   const { url, error } = await uploadCommunityImage(imageFile, userId)
+      //   if (error) {
+      //     throw new Error("Failed to upload community image.")
+      //   }
+      //   coverImageUrl = url
+      // }
 
       // Get country and city full names
       const countryName = communityData.country ? 
@@ -272,7 +272,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
       const cityName = communityData.city || ""
 
       // Save the community data
-      const { success, communityId, error } = await createFullCommunity(
+      const { success, error } = await createFullCommunity(
         {
           name: communityData.name,
           description: communityData.description,
