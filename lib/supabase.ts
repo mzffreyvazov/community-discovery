@@ -77,10 +77,47 @@ export interface CommunityTagCreateData {
   tag_id: number;  // Changed from tag_name to tag_id
 }
 
+// Define types for database responses
+interface Community {
+  id: number;
+  name: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+  owner_id: number;
+  city: string | null;
+  country: string | null;
+  cover_image_url: string | null;
+  is_online: boolean;
+  member_count: number;
+}
+
+interface ChatRoom {
+  id: number;
+  community_id: number;
+  name: string;
+  type: 'text' | 'voice' | 'video';
+  created_at: string;
+}
+
+interface CommunityTag {
+  id: number;
+  community_id: number;
+  tag_id: number;
+}
+
+// Define error type
+interface SupabaseError {
+  message: string;
+  details?: string;
+  hint?: string;
+  code?: string;
+}
+
 /**
  * Creates a new community in the database
  */
-export async function createCommunity(communityData: CommunityCreateData): Promise<{ data: any; error: any }> {
+export async function createCommunity(communityData: CommunityCreateData): Promise<{ data: Community | null; error: SupabaseError | null }> {
   const supabase = createBrowserClient();
   
   // Create a new timestamp for created_at and updated_at
@@ -111,7 +148,7 @@ export async function createCommunity(communityData: CommunityCreateData): Promi
 /**
  * Creates chat rooms for a community
  */
-export async function createChatRooms(chatRooms: ChatRoomCreateData[]): Promise<{ data: any; error: any }> {
+export async function createChatRooms(chatRooms: ChatRoomCreateData[]): Promise<{ data: ChatRoom[] | null; error: SupabaseError | null }> {
   const supabase = createBrowserClient();
   
   const { data, error } = await supabase
@@ -125,7 +162,7 @@ export async function createChatRooms(chatRooms: ChatRoomCreateData[]): Promise<
 /**
  * Creates tags for a community
  */
-export async function createCommunityTags(tagRelations: { community_id: number; tag_names: string[] }): Promise<{ data: any; error: any }> {
+export async function createCommunityTags(tagRelations: { community_id: number; tag_names: string[] }): Promise<{ data: CommunityTag[] | null; error: SupabaseError | null }> {
   const supabase = createBrowserClient();
   const { community_id, tag_names } = tagRelations;
   
@@ -186,13 +223,14 @@ export async function createFullCommunity(
   communityData: CommunityCreateData,
   chatRooms: Array<{ name: string; type: 'text' | 'voice' | 'video' }>,
   tags: string[]
-): Promise<{ success: boolean; communityId?: number; error?: any }> {
+): Promise<{ success: boolean; communityId?: number; error?: SupabaseError | Error }> {
   try {
     // 1. Create the community
     const supabase = createBrowserClient();
     const { data: community, error: communityError } = await createCommunity(communityData);
     
     if (communityError) throw communityError;
+    if (!community) throw new Error('Failed to create community: No data returned');
     
     const communityId = community.id;
     
@@ -234,14 +272,14 @@ export async function createFullCommunity(
     return { success: true, communityId };
   } catch (error) {
     console.error('Error creating community:', error);
-    return { success: false, error };
+    return { success: false, error: error as SupabaseError | Error };
   }
 }
 
 /**
  * Uploads an image file to Supabase storage
  */
-export async function uploadCommunityImage(file: File, userId: number): Promise<{ url: string | null; error: any }> {
+export async function uploadCommunityImage(file: File, userId: number): Promise<{ url: string | null; error: SupabaseError | null }> {
   const supabase = createBrowserClient();
   
   const fileExt = file.name.split('.').pop();
