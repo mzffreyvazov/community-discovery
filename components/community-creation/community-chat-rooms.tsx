@@ -45,37 +45,36 @@ export function CommunityChatRooms({ data, updateData }: CommunityChatRoomsProps
 
       <div className="space-y-4">
         {data.chatRooms.map((room, index) => (
-          <div key={index} className="flex items-center gap-3 p-3 border rounded-md">
-            <MessageSquare className="h-5 w-5 text-muted-foreground" />
-
-            <div className="flex-1">
+          <div key={index} className="flex items-center gap-3 p-3 border rounded-md bg-background">
+            <div className="flex-1 flex items-center gap-3">
+              <MessageSquare className="h-5 w-5 text-muted-foreground flex-shrink-0" />
               <Input
                 value={room.name}
                 onChange={(e) => updateChatRoom(index, "name", e.target.value)}
                 placeholder="Room name"
-                className="mb-2"
               />
             </div>
 
-            <div className="w-32">
-              <Select value={room.type} onValueChange={(value) => updateChatRoom(index, "type", value)}>
-                <SelectTrigger className="cursor-pointer">
-                  <SelectValue placeholder="Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem className="cursor-pointer" value="text">Text</SelectItem>
-                  <SelectItem className="cursor-pointer" value="voice">Voice</SelectItem>
-                  <SelectItem className="cursor-pointer" value="video">Video</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Select 
+              value={room.type} 
+              onValueChange={(value) => updateChatRoom(index, "type", value)}
+            >
+              <SelectTrigger className="w-[110px] cursor-pointer">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="text" className="cursor-pointer">Text</SelectItem>
+                <SelectItem value="voice" className="cursor-pointer">Voice</SelectItem>
+                <SelectItem value="video" className="cursor-pointer">Video</SelectItem>
+              </SelectContent>
+            </Select>
 
             <Button
               variant="ghost"
               size="icon"
               onClick={() => removeChatRoom(index)}
               disabled={data.chatRooms.length === 1}
-              className="text-destructive"
+              className="h-10 w-10 flex-shrink-0 text-muted-foreground hover:text-destructive cursor-pointer"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
