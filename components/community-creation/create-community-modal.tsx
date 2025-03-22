@@ -370,6 +370,42 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
     setImageFile(file)
   }
 
+  // Add new handler for tab clicks
+  const handleTabClick = (tabName: string) => {
+    if (tabName === activeTab) return;
+
+    // Going forward requires validation
+    if (
+      (activeTab === "basic-info" && (tabName === "chat-rooms" || tabName === "settings")) ||
+      (activeTab === "chat-rooms" && tabName === "settings")
+    ) {
+      if (activeTab === "basic-info") {
+        if (!validateBasicInfo()) {
+          toast.error("Please fill in all required fields in Basic Info")
+          return
+        }
+      } else if (activeTab === "chat-rooms") {
+        if (communityData.chatRooms.some(room => !room.name.trim())) {
+          toast.error("All chat rooms must have a name")
+          return
+        }
+      }
+    }
+
+    setActiveTab(tabName)
+  }
+
+  // Add helper function to determine if a tab is clickable
+  const isTabClickable = (tabName: string) => {
+    if (tabName === "basic-info") return true;
+    if (tabName === "chat-rooms") return Object.keys(validationErrors).length === 0;
+    if (tabName === "settings") {
+      return Object.keys(validationErrors).length === 0 && 
+             !communityData.chatRooms.some(room => !room.name.trim());
+    }
+    return false;
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogClose}>
       <DialogContent className="sm:max-w-[600px] flex flex-col max-h-[90vh]">
@@ -410,25 +446,34 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
                 style={{ width: "33.333%" }}
               />
 
-              {/* Tab buttons with enhanced hover states */}
+              {/* Update tab buttons with clickable state */}
               <button
-                onClick={() => setActiveTab("basic-info")}
-                className={`cursor-pointer flex-1 py-2 z-20 relative text-sm font-medium transition-colors rounded-md
-                  ${activeTab === "basic-info" ? "text-foreground hover:text-foreground" : "text-muted-foreground hover:text-foreground/80"}`}
+                onClick={() => handleTabClick("basic-info")}
+                className={`flex-1 py-2 z-20 relative text-sm font-medium transition-colors rounded-md
+                  ${activeTab === "basic-info" 
+                    ? "text-foreground hover:text-foreground" 
+                    : "text-muted-foreground hover:text-foreground/80"}
+                  ${isTabClickable("basic-info") ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
               >
                 Basic Info
               </button>
               <button
-                onClick={() => setActiveTab("chat-rooms")}
-                className={`cursor-pointer flex-1 py-2 z-10 relative text-sm font-medium transition-colors rounded-md
-                  ${activeTab === "chat-rooms" ? "text-foreground hover:text-foreground" : "text-muted-foreground hover:text-foreground/80"}`}
+                onClick={() => handleTabClick("chat-rooms")}
+                className={`flex-1 py-2 z-20 relative text-sm font-medium transition-colors rounded-md
+                  ${activeTab === "chat-rooms" 
+                    ? "text-foreground hover:text-foreground" 
+                    : "text-muted-foreground hover:text-foreground/80"}
+                  ${isTabClickable("chat-rooms") ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
               >
                 Chat Rooms
               </button>
               <button
-                onClick={() => setActiveTab("settings")}
-                className={`cursor-pointer flex-1 py-2 z-10 relative text-sm font-medium transition-colors rounded-md
-                  ${activeTab === "settings" ? "text-foreground hover:text-foreground" : "text-muted-foreground hover:text-foreground/80"}`}
+                onClick={() => handleTabClick("settings")}
+                className={`flex-1 py-2 z-20 relative text-sm font-medium transition-colors rounded-md
+                  ${activeTab === "settings" 
+                    ? "text-foreground hover:text-foreground" 
+                    : "text-muted-foreground hover:text-foreground/80"}
+                  ${isTabClickable("settings") ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
               >
                 Settings
               </button>
