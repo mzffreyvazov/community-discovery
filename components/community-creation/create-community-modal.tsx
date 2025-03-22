@@ -35,6 +35,15 @@ interface LoadingState {
   submit: boolean
 }
 
+// Add after other interfaces
+interface ValidationErrors {
+  name?: string;
+  description?: string;
+  country?: string;
+  city?: string;
+  tags?: string;
+}
+
 // Update the CommunityData type to include location fields
 export type CommunityData = {
   name: string
@@ -88,6 +97,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
   
   // Keep track of the raw file for uploading
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({})
 
   const getScrollbarWidth = () => {
     const outer = document.createElement("div")
@@ -287,11 +297,40 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
     setCommunityData((prev) => ({ ...prev, ...data }))
   }
 
+  // Add this validation function
+  const validateBasicInfo = () => {
+    const errors: ValidationErrors = {}
+    
+    if (!communityData.name.trim()) {
+      errors.name = "Community name is required"
+    } else if (communityData.name.length < 3) {
+      errors.name = "Name must be at least 3 characters"
+    }
+
+    if (!communityData.description.trim()) {
+      errors.description = "Description is required"
+    }
+
+    if (!communityData.country) {
+      errors.country = "Please select a country"
+    }
+
+    if (!communityData.city && communityData.country) {
+      errors.city = "Please select a city/state"
+    }
+
+    if (communityData.tags.length === 0) {
+      errors.tags = "Add at least one tag"
+    }
+
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
   const handleNext = () => {
     if (activeTab === "basic-info") {
-      // Validate basic info before proceeding
-      if (!communityData.name.trim()) {
-        toast.error("Please provide a name for your community.")
+      if (!validateBasicInfo()) {
+        toast.error("Please fill in all required fields")
         return
       }
       setActiveTab("chat-rooms")
@@ -318,14 +357,27 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[600px] flex flex-col max-h-[90vh]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Create Community</DialogTitle>
         </DialogHeader>
 
-        <div className="mt-4">
-          {/* Custom tabs implementation for better animation control */}
-          <div className="flex mb-6 p-1 bg-muted/20 rounded-lg relative">
+        <div className="mt-4 flex-1 overflow-y-auto pr-2 no-scrollbar">
+          <style jsx global>{`
+            .no-scrollbar::-webkit-scrollbar {
+              display: none;
+            }
+            .no-scrollbar {
+              -ms-overflow-style: none;
+              scrollbar-width: none;
+            }
+          `}</style>
+
+          {/* Tabs with improved background */}
+          <div className="flex mb-6 p-1 bg-muted/20 rounded-lg relative sticky top-0 z-10">
+            {/* Add a background layer */}
+            <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background/95 backdrop-blur-sm rounded-lg" />
+
             {/* The animated background pill */}
             <motion.div
               className="absolute h-[85%] top-[7.5%] rounded-md bg-white dark:bg-slate-800 shadow-sm z-0"
@@ -341,10 +393,10 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
               style={{ width: "33.333%" }}
             />
 
-            {/* Tab buttons */}
+            {/* Rest of the tabs content with increased z-index */}
             <button
               onClick={() => setActiveTab("basic-info")}
-              className={`cursor-pointer flex-1 py-2 z-10 relative text-sm font-medium transition-colors rounded-md
+              className={`cursor-pointer flex-1 py-2 z-20 relative text-sm font-medium transition-colors rounded-md
                 ${activeTab === "basic-info" ? "text-foreground" : "text-muted-foreground"}`}
             >
               Basic Info
@@ -365,39 +417,50 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
             </button>
           </div>
 
-          {/* Tab content with animations */}
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={activeTab}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              variants={tabVariants}
-              transition={{ duration: 0.2 }}
-            >
-              {activeTab === "basic-info" && (
-                <CommunityBasicInfo
-                  data={communityData}
-                  updateData={updateCommunityData}
-                  countries={countries}
-                  cities={cities}
-                  loading={loading}
-                  countryOpen={countryOpen}
-                  setCountryOpen={setCountryOpen}
-                  cityOpen={cityOpen}
-                  setCityOpen={setCityOpen}
-                  onImageUpload={handleImageUpload}
-                />
-              )}
-              {activeTab === "chat-rooms" && (
-                <CommunityChatRooms data={communityData} updateData={updateCommunityData} />
-              )}
-              {activeTab === "settings" && <CommunitySettings data={communityData} updateData={updateCommunityData} />}
-            </motion.div>
-          </AnimatePresence>
+          {/* Tab content */}
+          <div className="relative z-0">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeTab}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={tabVariants}
+                transition={{ duration: 0.2 }}
+              >
+                {activeTab === "basic-info" && (
+                  <CommunityBasicInfo
+                    data={communityData}
+                    updateData={(newData) => {
+                      updateCommunityData(newData)
+                      // Clear validation errors for updated fields
+                      const updatedErrors = { ...validationErrors }
+                      Object.keys(newData).forEach(key => {
+                        delete updatedErrors[key as keyof ValidationErrors]
+                      })
+                      setValidationErrors(updatedErrors)
+                    }}
+                    countries={countries}
+                    cities={cities}
+                    loading={loading}
+                    countryOpen={countryOpen}
+                    setCountryOpen={setCountryOpen}
+                    cityOpen={cityOpen}
+                    setCityOpen={setCityOpen}
+                    onImageUpload={handleImageUpload}
+                    validationErrors={validationErrors}
+                  />
+                )}
+                {activeTab === "chat-rooms" && (
+                  <CommunityChatRooms data={communityData} updateData={updateCommunityData} />
+                )}
+                {activeTab === "settings" && <CommunitySettings data={communityData} updateData={updateCommunityData} />}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between mt-6 pt-4 border-t">
           {activeTab !== "basic-info" ? (
             <Button variant="outline" onClick={handleBack} disabled={loading.submit}>
               Back

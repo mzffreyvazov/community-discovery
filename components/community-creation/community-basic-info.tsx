@@ -35,6 +35,13 @@ interface CommunityBasicInfoProps {
   cityOpen: boolean
   setCityOpen: (open: boolean) => void
   onImageUpload: (file: File) => void;
+  validationErrors: {
+    name?: string;
+    description?: string;
+    country?: string;
+    city?: string;
+    tags?: string;
+  };
 }
 
 export function CommunityBasicInfo({
@@ -47,6 +54,7 @@ export function CommunityBasicInfo({
   setCountryOpen,
   cityOpen,
   setCityOpen,
+  validationErrors,
 }: CommunityBasicInfoProps) {
   const [tagInput, setTagInput] = useState("")
 
@@ -85,7 +93,11 @@ export function CommunityBasicInfo({
           onChange={(e) => updateData({ name: e.target.value })}
           placeholder="Enter community name"
           required
+          className={cn(validationErrors.name && "border-red-500")}
         />
+        {validationErrors.name && (
+          <p className="text-sm text-red-500 mt-1">{validationErrors.name}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -96,7 +108,11 @@ export function CommunityBasicInfo({
           onChange={(e) => updateData({ description: e.target.value })}
           placeholder="Describe your community's purpose"
           rows={3}
+          className={cn(validationErrors.description && "border-red-500")}
         />
+        {validationErrors.description && (
+          <p className="text-sm text-red-500 mt-1">{validationErrors.description}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -108,8 +124,11 @@ export function CommunityBasicInfo({
                 variant="outline"
                 role="combobox"
                 aria-expanded={countryOpen}
-                className="w-full justify-between"
                 disabled={loading.countries}
+                className={cn(
+                  "w-full justify-between",
+                  validationErrors.country && "border-red-500"
+                )}
               >
                 {loading.countries ? (
                   <div className="flex items-center">
@@ -154,6 +173,9 @@ export function CommunityBasicInfo({
               </Command>
             </PopoverContent>
           </Popover>
+          {validationErrors.country && (
+            <p className="text-sm text-red-500 mt-1">{validationErrors.country}</p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="city">City/State</Label>
@@ -163,8 +185,11 @@ export function CommunityBasicInfo({
                 variant="outline"
                 role="combobox"
                 aria-expanded={cityOpen}
-                className="w-full justify-between"
                 disabled={!data.country || loading.cities}
+                className={cn(
+                  "w-full justify-between",
+                  validationErrors.city && "border-red-500"
+                )}
               >
                 {loading.cities ? (
                   <div className="flex items-center">
@@ -203,6 +228,9 @@ export function CommunityBasicInfo({
               </Command>
             </PopoverContent>
           </Popover>
+          {validationErrors.city && (
+            <p className="text-sm text-red-500 mt-1">{validationErrors.city}</p>
+          )}
         </div>
       </div>
 
@@ -214,7 +242,11 @@ export function CommunityBasicInfo({
           onChange={(e) => setTagInput(e.target.value)}
           onKeyDown={handleAddTag}
           placeholder="Add tags to help people find your community"
+          className={cn(validationErrors.tags && "border-red-500")}
         />
+        {validationErrors.tags && (
+          <p className="text-sm text-red-500 mt-1">{validationErrors.tags}</p>
+        )}
 
         <div className="flex flex-wrap gap-2 mt-2">
           {data.tags.map((tag) => (
