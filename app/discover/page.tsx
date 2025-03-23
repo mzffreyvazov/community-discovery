@@ -2,6 +2,7 @@ import { createAdminClient } from '@/lib/supabase'
 import { Search } from 'lucide-react'
 import { CategoryScroll } from '@/components/CategoryScroll'
 import { CreateCommunityButton } from '@/components/community-creation/create-community-button'
+import Link from 'next/link'
 // Add these interfaces at the top of your file
 interface Tag {
   id: string;
@@ -138,9 +139,9 @@ export default async function DiscoverPage() {
                 <span className="text-muted-foreground">
                   {community.city || 'Global'}
                 </span>
-                <button className="text-primary hover:underline">
+                <Link href={`/community/${community.id}`} className="text-primary hover:underline">
                   View Details →
-                </button>
+                </Link>
               </div>
             </div>
           ))}
