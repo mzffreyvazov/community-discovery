@@ -15,15 +15,16 @@ interface CommunityTag {
 }
 
 interface PageProps {
-  params: {
-    id: string
+    params: Promise<{
+      id: string
+    }>
   }
-}
 
 // Separate metadata generation function
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const supabase = createAdminClient()
-  const { id } = params
+    const resolvedParams = await params
+    const supabase = createAdminClient()
+    const { id } = resolvedParams
   
   const { data: community } = await supabase
     .from('communities')
@@ -38,8 +39,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function CommunityChatPage({ params }: PageProps) {
-  const supabase = createAdminClient()
-  const { id } = params;
+    const resolvedParams = await params
+    const supabase = createAdminClient()
+    const { id } = resolvedParams
   
   // Fetch community data including tags
   const { data: community, error } = await supabase
