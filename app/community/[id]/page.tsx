@@ -16,9 +16,9 @@ interface CommunityTag {
 }
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 // Separate metadata generation function
