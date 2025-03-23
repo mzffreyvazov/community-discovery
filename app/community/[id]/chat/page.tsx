@@ -37,11 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export default async function CommunityChatPage({ 
-  params 
-}: { 
-  params: { id: string } 
-}) {
+export default async function CommunityChatPage({ params }: PageProps) {
   const supabase = createAdminClient()
   const { id } = await params;
   
