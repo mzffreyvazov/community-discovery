@@ -14,18 +14,18 @@ interface CommunityTag {
   tags: Tag;
 }
 
-interface Community {
-  id: string;
-  name: string;
-  description: string;
-  created_at: string;
-  city: string | null;
-  state: string | null;
-  country: string | null;
-  member_count: number | null;
-  activity_level: string | null;
-  community_tags: CommunityTag[];
-}
+// interface Community {
+//   id: string;
+//   name: string;
+//   description: string;
+//   created_at: string;
+//   city: string | null;
+//   state: string | null;
+//   country: string | null;
+//   member_count: number | null;
+//   activity_level: string | null;
+//   community_tags: CommunityTag[];
+// }
 
 interface LayoutProps {
   children: React.ReactNode

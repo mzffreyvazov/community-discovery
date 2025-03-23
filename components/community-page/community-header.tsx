@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge"
 
 interface Moderator {
   id: string;

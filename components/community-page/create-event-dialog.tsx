@@ -14,11 +14,18 @@ interface User {
   avatar: string;
 }
 
+interface Message {
+  id: string;
+  content: string;
+  timestamp: string;
+  sender: User;
+}
+
 interface ChatRoom {
   id: string;
   name: string;
   type: "text" | "voice" | "video";
-  messages: any[]; // This could be further refined with a Message interface
+  messages: Message[];
   isModeratorOnly: boolean;
 }
 
