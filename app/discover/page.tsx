@@ -30,7 +30,7 @@ export default async function DiscoverPage() {
             name
           )
         )
-      `),
+      `).limit(100),
     supabase
       .from('tags')
       .select('*')
