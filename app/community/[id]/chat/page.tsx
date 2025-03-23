@@ -2,7 +2,6 @@ import { createAdminClient } from '@/lib/supabase'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CommunityAbout } from '@/components/community-page/community-about'
-import { EventsPreview } from '@/components/community-page/events-preview'
 
 // Define interfaces for TypeScript
 interface Tag {
@@ -33,15 +32,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     .single()
 
   return {
-    title: community?.name || 'Community',
-    description: `View details about ${community?.name}`
+    title: `Chat - ${community?.name || 'Community'}`,
+    description: `Chat with members of ${community?.name}`
   }
 }
 
-export default async function CommunityPage({ params }: PageProps) {
+export default async function CommunityChatPage({ 
+  params 
+}: { 
+  params: { id: string } 
+}) {
   const supabase = createAdminClient()
-  const { id } = await params
-
+  const { id } = await params;
+  
   // Fetch community data including tags
   const { data: community, error } = await supabase
     .from('communities')
@@ -104,10 +107,10 @@ export default async function CommunityPage({ params }: PageProps) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Main Content Area */}
       <div className="md:col-span-2 space-y-6">
-        {/* Show only Events on Home page */}
         <div className="bg-card rounded-lg p-4 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Upcoming Events</h2>
-          <EventsPreview communityId={community.id} />
+          <h2 className="text-lg font-semibold mb-4">Community Chat</h2>
+          <p className="text-muted-foreground">Chat functionality will be implemented here.</p>
+          {/* Chat component will go here */}
         </div>
       </div>
       
