@@ -307,3 +307,58 @@ export async function uploadCommunityImage(file: File, userId: number): Promise<
 export async function getCurrentUserId(): Promise<number | null> {
   return getUserId();
 }
+
+export interface Event {
+  id: string
+  title: string
+  description: string
+  start_time: string
+  end_time: string
+  location: string
+  is_online: boolean
+  max_attendees: number
+  address: string
+  created_by: number
+  created_by_user: {
+    useri_id: number
+    profile_image_url: string
+  }
+}
+
+export async function getEventWithDetails(eventId: string) {
+  const supabase = createAdminClient()
+  
+  const { data: event, error: eventError } = await supabase
+    .from('events')
+    .select(`
+      *,
+      created_by_user:created_by(*)
+    `)
+    .eq('id', eventId)
+    .single()
+
+  if (eventError) {
+    console.error('Error fetching event:', eventError)
+    return null
+  }
+
+  const { data: attendees, error: attendeesError } = await supabase
+    .from('event_attendees')
+    .select(`
+      user_id,
+      user:user_id(*)
+    `)
+    .eq('event_id', eventId)
+
+  if (attendeesError) {
+    console.error('Error fetching attendees:', attendeesError)
+    return null
+  }
+
+  return {
+    ...event,
+    attendees: attendees?.map(a => a.user) || []
+  }
+}
+
+

@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.12.6",
     "@clerk/themes": "^2.2.22",
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^4.1.3",
     "@radix-ui/react-avatar": "^1.1.3",
     "@radix-ui/react-dialog": "^1.1.6",
@@ -33,6 +34,7 @@
     "embla-carousel-react": "^8.5.2",
     "framer-motion": "^12.5.0",
     "geolocation-utils": "^1.2.6",
+    "heroicons": "^2.2.0",
     "lucide-react": "^0.482.0",
     "next": "^15.2.3",
     "next-themes": "^0.4.6",
