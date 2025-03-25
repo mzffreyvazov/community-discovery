@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { createAdminClient } from '@/lib/supabase'
 import { Search } from 'lucide-react'
 import { CategoryScroll } from '@/components/CategoryScroll'
@@ -17,7 +19,7 @@ interface CommunityTag {
 
 export default async function DiscoverPage() {
   const supabase = createAdminClient()
-
+  
   // Fetch both communities and tags
   const [{ data: communities }, { data: categories }] = await Promise.all([
     supabase
