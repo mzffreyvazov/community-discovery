@@ -17,8 +17,9 @@ export async function EventDetail({ communityId, eventId }: EventDetailProps) {
     return <div>Event not found</div>
   }
   
-  const placeholderMapUrl = "community-discovery\public\file.svg"
-
+  const placeholderMapUrl = "community-discovery\components\event-page\file.jpeg"
+  console.log("Event data:", event);
+  console.log("Address:", event.address);
   return (
     <div className="space-y-6">
       {/* Event Header Banner */}
@@ -97,30 +98,30 @@ export async function EventDetail({ communityId, eventId }: EventDetailProps) {
 
                 </div>
             </Card>
-            
-            {event.address && (
-                <Card className="p-6">
+                      
+            <Card className="p-6">
                 <h2 className="text-xl font-bold mb-4">Location</h2>
                 <div className="rounded-md overflow-hidden">
                     <img
-                    src={placeholderMapUrl}
+                    src="/placeholder-map.jpeg" // Fix image path to use web-friendly format
                     alt="Event location map"
                     className="w-full h-[200px] object-cover"
                     />
                 </div>
                 <div className="mt-3 flex items-start gap-2">
                     <MapPin className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-muted-foreground">{event.address}</p>
+                    <p className="text-sm text-muted-foreground">
+                    {event.address || "Address not provided for this event"}
+                    </p>
                 </div>
-                </Card>
-            )}
+            </Card>
         </div>
             
         {/* Right Column */}
         <div className="md:col-span-1">
         <Card className="overflow-hidden">
             {/* Organizer Info */}
-            <div className="p-4 border-b">
+            <div className="p-4 border-b" >
             <h2 className="text-lg font-semibold mb-3">Organized by</h2>
             <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
