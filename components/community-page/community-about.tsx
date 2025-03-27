@@ -1,5 +1,3 @@
-"use client"
-
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -9,6 +7,8 @@ import Link from "next/link"
 interface Moderator {
   id: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
   avatar?: string;
 }
 
@@ -21,13 +21,18 @@ interface Community {
   moderators?: Moderator[];
   rules?: string[];
   createdAt?: Date | string;
+  owner: {
+    useri_id: number;
+    clerk_user_id: string;
+  };
 }
 
 interface CommunityAboutProps {
-  community: Community
+  community: Community;
+  moderator?: Moderator;
 }
 
-export function CommunityAbout({ community }: CommunityAboutProps) {
+export async function CommunityAbout({ community, moderator }: CommunityAboutProps) {
   return (
     <div className="bg-card rounded-lg p-4 shadow-sm">
       <div className="space-y-6">
@@ -66,19 +71,23 @@ export function CommunityAbout({ community }: CommunityAboutProps) {
           </div>
         </div>
 
-        {community.moderators && community.moderators.length > 0 && (
+        {moderator && (
           <div className="border-t pt-4">
             <h2 className="text-lg font-semibold mb-3">Moderators</h2>
             <div className="space-y-3">
-              {community.moderators.map((mod) => (
-                <div key={mod.id} className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={mod.avatar} alt={mod.name} />
-                    <AvatarFallback>{mod.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm">{mod.name}</span>
-                </div>
-              ))}
+              <div className="flex items-center gap-3">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={moderator.avatar} alt={moderator.name} />
+                  <AvatarFallback>
+                    {moderator.firstName?.[0] || moderator.name[0]}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm">
+                  {moderator.firstName && moderator.lastName 
+                    ? `${moderator.firstName} ${moderator.lastName}`
+                    : moderator.name}
+                </span>
+              </div>
             </div>
           </div>
         )}
