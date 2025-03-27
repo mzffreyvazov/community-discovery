@@ -31,7 +31,7 @@ export async function POST() {
     const { data: existingUser, error: selectError } = await supabaseAdmin
       .from('users')
       .select('*')  // Be explicit about what you're selecting
-      .eq('clerk_user_id', userId.toString())  // Ensure it's treated as a string
+      .eq('clerk_user_id', userId)  // Ensure it's treated as a string
       .single();
 
     if (selectError && selectError.code !== 'PGRST116') { // Ignore not found error
@@ -46,7 +46,7 @@ export async function POST() {
       const { data: newUser, error: insertError } = await supabaseAdmin
         .from('users')
         .insert({
-          clerk_user_id: userId.toString(),  // Ensure it's treated as a string
+          clerk_user_id: userId,  // Ensure it's treated as a string
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
           bio: null // Initialize bio to null
@@ -105,7 +105,7 @@ export async function PUT(request: Request) {
         bio,
         updated_at: new Date().toISOString()
       })
-      .eq('clerk_user_id', userId.toString())
+      .eq('clerk_user_id', userId)
       .select()
       .single();
 

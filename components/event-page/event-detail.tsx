@@ -5,12 +5,34 @@ import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { EventChat } from "@/components/event-page/event-chat"
+
 interface EventDetailProps {
   communityId: string
   eventId: string
+  organizerUsername: string
+  organizerImage: string
+  communityName?: string
+  communityImage?: string
+  communityMemberCount?: number
+  attendees: Array<{
+    event_id: number
+    user_id: number
+    rsvp_status: string
+    rsvp_time: string
+    user: any  // You might want to type this more specifically based on your user structure
+  }>
 }
 
-export async function EventDetail({ communityId, eventId }: EventDetailProps) {
+export async function EventDetail({ 
+  communityId, 
+  eventId, 
+  organizerUsername, 
+  organizerImage,
+  communityName,
+  communityImage,
+  communityMemberCount,
+  attendees
+}: EventDetailProps) {
   const event = await getEventWithDetails(eventId)
 
   if (!event) {
@@ -121,15 +143,15 @@ export async function EventDetail({ communityId, eventId }: EventDetailProps) {
         <div className="md:col-span-1">
         <Card className="overflow-hidden">
             {/* Organizer Info */}
-            <div className="p-4 border-b" >
+            <div className="p-4 border-b">
             <h2 className="text-lg font-semibold mb-3">Organized by</h2>
             <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
-                <AvatarImage src="/placeholder-avatar.png" />
-                <AvatarFallback>O</AvatarFallback>
+                <AvatarImage src={organizerImage} />
+                <AvatarFallback>{organizerUsername[0]}</AvatarFallback>
                 </Avatar>
                 <div>
-                <p className="font-medium">John Doe</p>
+                <p className="font-medium">{organizerUsername}</p>
                 <p className="text-sm text-muted-foreground">Organizer</p>
                 </div>
             </div>
@@ -162,13 +184,19 @@ export async function EventDetail({ communityId, eventId }: EventDetailProps) {
             <h2 className="text-lg font-semibold mb-3">Community</h2>
             <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-md overflow-hidden bg-muted flex items-center justify-center">
-                <div className="w-full h-full flex items-center justify-center text-base font-bold">
-                    C
-                </div>
+                {communityImage ? (
+                    <img src={communityImage} alt={communityName} className="w-full h-full object-cover" />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center text-base font-bold">
+                    {communityName?.[0] ?? 'C'}
+                    </div>
+                )}
                 </div>
                 <div>
-                <p className="font-medium">Tech Community</p>
-                <p className="text-sm text-muted-foreground">234 members</p>
+                <p className="font-medium">{communityName ?? 'Community Name'}</p>
+                <p className="text-sm text-muted-foreground">
+                    {communityMemberCount?.toLocaleString() ?? '0'} members
+                </p>
                 </div>
             </div>
             </div>
