@@ -5,12 +5,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar, Clock, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { createBrowserClient } from "@/lib/supabase" // Use existing browser client
+import { createBrowserClient } from "@/lib/supabase"
 
 interface User {
   id: string;
   name: string;
   avatar: string;
+  clerk_user_id?: string;
+}
+
+interface EventAttendee {
+  user_id: number;
+  event_id: number;
+  rsvp_status: string;
+  rsvp_time: string;
+  user: {
+    name: string;
+    image_url?: string;
+  };
 }
 
 interface Event {
@@ -40,29 +52,35 @@ export function EventsPreview({ communityId }: EventsPreviewProps): JSX.Element 
     async function fetchEvents() {
       try {
         setLoading(true)
-        
-        // Use existing browser client
         const supabase = createBrowserClient()
         
-        // Fetch events for this community
         const { data, error } = await supabase
           .from('events')
-          .select('*')
+          .select(`
+            *,
+            created_by_user:created_by(*),
+            event_attendees(
+              *,
+              user:user_id(*)
+            )
+          `)
           .eq('community_id', communityId)
           .order('start_time', { ascending: true })
         
         if (error) throw error
         
         if (data && data.length > 0) {
-          // Map Supabase data to our Event interface
           const formattedEvents = data.map(event => {
-            // Format the start_time into date and time components
             const startDate = new Date(event.start_time)
-            
-            // Create location string from address, city, country
             const locationParts = [event.address, event.city, event.country].filter(Boolean)
             const locationString = locationParts.join(', ') || (event.is_online ? 'Online Event' : 'Location not specified')
-            
+
+            const attendees = event.event_attendees?.map((attendee: EventAttendee) => ({
+              id: attendee.user_id,
+              name: attendee.user?.name || 'Anonymous',
+              avatar: attendee.user?.image_url || '/placeholder.svg'
+            })) || []
+
             return {
               id: event.id,
               title: event.title,
@@ -75,17 +93,11 @@ export function EventsPreview({ communityId }: EventsPreviewProps): JSX.Element 
               location: locationString,
               maxAttendees: event.max_attendees,
               isOnline: event.is_online,
-              // Since we don't have real attendees data yet:
-              attendees: Array(5).fill(null).map((_, i) => ({
-                id: `user-${i}`,
-                name: `Attendee ${i + 1}`,
-                avatar: "/placeholder.svg"
-              })),
-              // Use the creator ID but with placeholder data
+              attendees,
               organizer: {
                 id: event.created_by,
-                name: "Event Organizer",
-                avatar: "/placeholder.svg"
+                name: event.created_by_user?.name || "Event Organizer",
+                avatar: event.created_by_user?.image_url || '/placeholder.svg'
               }
             }
           })
@@ -105,10 +117,7 @@ export function EventsPreview({ communityId }: EventsPreviewProps): JSX.Element 
     fetchEvents()
   }, [communityId])
 
-  // Sort events by date (upcoming first)
   const sortedEvents = [...events].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-
-  // Take either all events or just 3 depending on state
   const eventsToShow = showAllEvents ? sortedEvents : sortedEvents.slice(0, 3)
 
   if (loading) {
