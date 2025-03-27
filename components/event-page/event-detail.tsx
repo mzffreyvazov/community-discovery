@@ -20,7 +20,7 @@ export async function EventDetail({ communityId, eventId }: EventDetailProps) {
   const placeholderMapUrl = "community-discovery\public\file.svg"
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6">
+    <div className="space-y-6">
       {/* Event Header Banner */}
       <div className="relative w-full h-48 bg-black mb-6 rounded-lg overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
