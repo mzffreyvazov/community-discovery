@@ -5,7 +5,7 @@ import { createClerkClient } from '@clerk/nextjs/server'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CommunityAbout } from '@/components/community-page/community-about'
-import { EventsPreview } from '@/components/community-page/events-preview'
+import EventsSectionWrapper from '@/components/event-creation/event-section-wrapper'
 
 // Define interfaces for TypeScript
 interface Tag {
@@ -108,8 +108,9 @@ async function getCommunityWithModerator(communityId: string) {
   return { community, moderator }
 }
 
-export default async function CommunityPage({ params }: { params: { id: string } }) {
-  const data = await getCommunityWithModerator(params.id)
+export default async function CommunityPage({ params }: PageProps) {
+  const { id } = await params
+  const data = await getCommunityWithModerator(id)
   if (!data) return notFound()
 
   const formattedCommunity = {
@@ -152,10 +153,8 @@ export default async function CommunityPage({ params }: { params: { id: string }
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Main Content Area */}
       <div className="md:col-span-2 space-y-6">
-        {/* Show only Events on Home page */}
         <div className="bg-card rounded-lg p-4 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Upcoming Events</h2>
-          <EventsPreview communityId={formattedCommunity.id} />
+          <EventsSectionWrapper communityId={formattedCommunity.id} />
         </div>
       </div>
       

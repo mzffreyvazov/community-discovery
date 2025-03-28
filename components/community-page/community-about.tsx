@@ -1,8 +1,6 @@
-import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, Users } from "lucide-react"
-import Link from "next/link"
 
 interface Moderator {
   id: string;
@@ -35,7 +33,7 @@ interface CommunityAboutProps {
 export async function CommunityAbout({ community, moderator }: CommunityAboutProps) {
   return (
     <div className="bg-card rounded-lg p-4 shadow-sm">
-      <div className="space-y-6">
+      <div className="space-y-4">
         <div>
           <h2 className="text-lg font-semibold mb-3">About Community</h2>
           <p className="text-sm text-muted-foreground mb-4">{community.description}</p>
@@ -45,22 +43,13 @@ export async function CommunityAbout({ community, moderator }: CommunityAboutPro
             <span>Created Jan 1, 2023</span>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-muted-foreground py-3 border-t">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground py-3 border-t border-b">
             <Users className="h-4 w-4" />
             <span>{community.memberCount} members</span>
           </div>
-
-          <div className="space-y-2 mt-4">
-            <Button asChild className="w-full">
-              <Link href={`/community/${community.id}/events`}>
-                <Calendar className="h-4 w-4 mr-2" />
-                View Events
-              </Link>
-            </Button>
-          </div>
         </div>
 
-        <div className="border-t pt-4">
+        <div className="pt-0">
           <h2 className="text-lg font-semibold mb-3">Tags</h2>
           <div className="flex flex-wrap gap-2">
             {community.tags.map((tag) => (

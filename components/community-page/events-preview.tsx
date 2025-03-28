@@ -6,6 +6,8 @@ import { Calendar, Clock, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { createBrowserClient } from "@/lib/supabase"
+import { SortOption } from "@/components/event-creation/event-filter"
+import React from "react"
 
 interface User {
   id: string;
@@ -36,17 +38,23 @@ interface Event {
   attendees: User[];
   organizer: User;
   isOnline: boolean;
+  createdAt: string;
 }
 
 interface EventsPreviewProps {
   communityId: string;
+  sortOption: SortOption;
+  refreshKey?: number; // Add a refresh key to force re-fetch
 }
 
-export function EventsPreview({ communityId }: EventsPreviewProps): JSX.Element {
+export function EventsPreview({ communityId, sortOption, refreshKey = 0 }: EventsPreviewProps): JSX.Element {
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showAllEvents, setShowAllEvents] = useState(false)
+
+  // Fix the dependency array issue by ensuring refreshKey is always included
+  const effectDependencies = React.useMemo(() => [communityId, refreshKey], [communityId, refreshKey]);
 
   useEffect(() => {
     async function fetchEvents() {
@@ -65,7 +73,7 @@ export function EventsPreview({ communityId }: EventsPreviewProps): JSX.Element 
             )
           `)
           .eq('community_id', communityId)
-          .order('start_time', { ascending: true })
+          .order('created_at', { ascending: false }) // Order by creation date, newest first
         
         if (error) throw error
         
@@ -98,7 +106,8 @@ export function EventsPreview({ communityId }: EventsPreviewProps): JSX.Element 
                 id: event.created_by,
                 name: event.created_by_user?.name || "Event Organizer",
                 avatar: event.created_by_user?.image_url || '/placeholder.svg'
-              }
+              },
+              createdAt: event.created_at // Add created_at to formatted events
             }
           })
           
@@ -115,9 +124,19 @@ export function EventsPreview({ communityId }: EventsPreviewProps): JSX.Element 
     }
     
     fetchEvents()
-  }, [communityId])
+  }, effectDependencies) // Use the memoized dependencies array
 
-  const sortedEvents = [...events].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  // Sort events based on provided sort option
+  const sortedEvents = [...events].sort((a, b) => {
+    if (sortOption === 'newest') {
+      // Sort by creation date (newest first)
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    } else {
+      // Sort by event date (upcoming first)
+      return new Date(a.date).getTime() - new Date(b.date).getTime()
+    }
+  })
+  
   const eventsToShow = showAllEvents ? sortedEvents : sortedEvents.slice(0, 3)
 
   if (loading) {
@@ -142,7 +161,9 @@ export function EventsPreview({ communityId }: EventsPreviewProps): JSX.Element 
       <div className="text-center py-12 bg-muted/30 rounded-lg">
         <h3 className="text-lg font-medium mb-2">No upcoming events</h3>
         <p className="text-muted-foreground mb-4">Create an event to bring community members together!</p>
-        <Button onClick={() => document.getElementById("create-event-dialog")?.click()}>Create Event</Button>
+        <Button onClick={() => document.getElementById("create-event-dialog")?.click()}>
+          Create Event
+        </Button>
       </div>
     )
   }
