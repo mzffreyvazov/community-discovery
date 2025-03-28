@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -30,7 +30,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
 
-  const initialEventState = {
+  const initialEventState = useMemo(() => ({
     title: "",
     description: "",
     city: "",
@@ -38,7 +38,8 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
     address: "",
     locationUrl: "",
     maxAttendees: "",
-  }
+  }), [])
+
   const [newEvent, setNewEvent] = useState(initialEventState)
 
   // Function to reset form state
@@ -49,16 +50,19 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
     setErrors({})
     setTouched({})
     setIsLoading(false) // Also reset loading state if dialog closes unexpectedly
-  }, [initialEventState]) // Include initialEventState in dependency array if it could change, though unlikely here
+  }, [initialEventState])
 
   // Handle dialog open/close changes
-  const handleOpenChange = (open: boolean) => {
-    setIsOpen(open); // Directly update the state based on the trigger
+  const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
-      // If the dialog is closing, reset the form
       resetForm();
     }
-  };
+    setIsOpen(open);
+  }, [resetForm]);
+
+  const handleCancel = useCallback(() => {
+    handleOpenChange(false);
+  }, [handleOpenChange]);
 
   // Effect for body scroll lock (remains the same)
   useEffect(() => {
@@ -492,8 +496,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
         <DialogFooter>
           <Button
             variant="outline"
-            // onClick directly sets state, onOpenChange will handle the reset
-            onClick={() => setIsOpen(false)}
+            onClick={handleCancel}
             disabled={isLoading}
             type="button" // Important: Prevent default form submission behavior
           >

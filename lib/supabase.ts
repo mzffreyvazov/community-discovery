@@ -19,16 +19,48 @@ export const createAdminClient = () => {
   });
 };
 
-// For client components only
-export const createBrowserClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
+
+async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
+  let lastError;
   
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error('Missing Supabase credentials');
+  for (let i = 0; i < MAX_RETRIES; i++) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      lastError = error;
+      if (error.code === 'ECONNRESET') {
+        console.log(`Retry attempt ${i + 1} after connection reset`);
+        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (i + 1)));
+        continue;
+      }
+      throw error;
+    }
   }
   
-  return createClient(supabaseUrl, supabaseAnonKey);
+  throw lastError;
+}
+
+// For client components only
+export const createBrowserClient = () => {
+  const client = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      auth: { persistSession: true },
+      global: {
+        fetch: async (url, options) => {
+          return withRetry(() => fetch(url, {
+            ...options,
+            // Add retry and timeout options
+            signal: AbortSignal.timeout(10000), // 10 second timeout
+          }));
+        },
+      },
+    }
+  );
+  return client;
 };
 
 // Fetching interests from tags table
