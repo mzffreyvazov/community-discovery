@@ -6,6 +6,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { CommunityAbout } from '@/components/community-page/community-about'
 import EventsSectionWrapper from '@/components/event-creation/event-section-wrapper'
+import { ScrollToTop } from '@/components/shared/scroll-to-top'
 
 // Define interfaces for TypeScript
 
@@ -142,6 +143,9 @@ export default async function CommunityPage({ params }: PageProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Add ScrollToTop component to reset scroll position */}
+      <ScrollToTop />
+      
       {/* Main Content Area */}
       <div className="md:col-span-2 space-y-6">
         <div className="bg-card rounded-lg p-4 shadow-sm">

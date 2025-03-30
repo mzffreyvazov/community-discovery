@@ -5,6 +5,7 @@ import { EventDetail } from "@/components/event-page/event-detail";
 import { notFound } from "next/navigation";
 import { createAdminClient } from '@/lib/supabase';
 import { createClerkClient } from '@clerk/nextjs/server';
+import { ScrollToTop } from "@/components/shared/scroll-to-top";
 
 // --- Interface Definition (Corrected to reflect runtime requirement) ---
 interface EventDetailPageProps {
@@ -89,9 +90,11 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   const defaultOrganizerImage = '/images/default-avatar.png'; // Adjust path if needed
   const defaultCommunityImage = '/images/default-community.png'; // Adjust path if needed
 
-  // Render the EventDetail component
+  // Render the EventDetail component with ScrollToTop wrapper
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Add ScrollToTop component to reset scroll position */}
+      <ScrollToTop />
       <main className="flex-1">
         <EventDetail
           // Pass IDs
