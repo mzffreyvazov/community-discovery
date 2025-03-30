@@ -4,7 +4,6 @@ import { Calendar, Clock, MapPin, Users, Heart, Share2 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { EventChat } from "@/components/event-page/event-chat"
 
 interface EventDetailProps {
   communityId: string
@@ -31,7 +30,6 @@ export async function EventDetail({
   communityName,
   communityImage,
   communityMemberCount,
-  attendees
 }: EventDetailProps) {
   const event = await getEventWithDetails(eventId)
 

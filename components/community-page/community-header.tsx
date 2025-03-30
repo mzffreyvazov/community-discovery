@@ -1,3 +1,4 @@
+import Link from "next/link"
 
 interface Moderator {
   id: string;
@@ -23,7 +24,10 @@ interface CommunityHeaderProps {
 
 export function CommunityHeader({ community }: CommunityHeaderProps) {
   return (
-    <div className="bg-card rounded-lg p-4 shadow-sm mb-6">
+    <Link 
+      href={`/community/${community.id}`} 
+      className="block bg-card rounded-lg p-4 shadow-sm mb-6 hover:shadow-md transition-shadow"
+    >
       <div className="flex items-center gap-4">
         <div className="w-12 h-12 rounded-md overflow-hidden bg-primary/10 flex items-center justify-center">
           {community.image ? (
@@ -46,7 +50,7 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 
