@@ -74,7 +74,7 @@ async function getEventAttendees(eventId: string) {
 
 // --- Page Component Definition (Ensure it is defined only ONCE) ---
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
-  const { id, eventId } = await params;
+  const { id, eventId } = params;  // Remove await since params is not a Promise
 
   const [community, event, attendees] = await Promise.all([
     getCommunity(id),
@@ -111,33 +111,13 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
         <EventDetail
-          // Pass community/event IDs
           communityId={community.id}
           eventId={eventId}
-
-          // Pass event data (ensure EventDetail expects these)
-          eventTitle={event.title}
-          eventDescription={event.description}
-          eventStartTime={event.start_time}
-          eventEndTime={event.end_time}
-          eventAddress={event.address}
-          eventCity={event.city}
-          eventCountry={event.country}
-          eventLocationUrl={event.location_url}
-          eventMaxAttendees={event.max_attendees}
-
-          // Pass organizer details
           organizerUsername={organizerUsername}
-          // Use nullish coalescing to provide fallback if image is null/undefined
           organizerImage={organizerImageFromClerk ?? defaultOrganizerImage}
-
-          // Pass community details (ensure EventDetail expects these)
           communityName={community.name}
-          // Provide fallback for community image too if needed
           communityImage={community.image_url ?? '/images/default-community.png'}
-          communityMemberCount={community.member_count ?? 0} // Provide fallback if count can be null
-
-          // Pass attendees
+          communityMemberCount={community.member_count ?? 0}
           attendees={attendees}
         />
       </main>
