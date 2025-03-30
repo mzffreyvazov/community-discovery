@@ -14,6 +14,44 @@ import { useAuth } from "@clerk/nextjs"
 import { toast } from "sonner"
 import { DateTimePicker } from "@/components/ui/date-time-picker"
 import { cn } from "@/lib/utils"
+import { Check, ChevronsUpDown } from "lucide-react"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+// Define types for country and state data
+interface CountryData {
+  cca2: string;
+  name: {
+    common: string;
+  };
+}
+
+interface StateData {
+  name: string;
+  state_code: string;
+}
+
+interface CountryOption {
+  value: string;
+  label: string;
+  fullName: string;
+}
+
+interface CityOption {
+  value: string;
+  label: string;
+}
 
 // Define the specific validation errors interface for this form
 interface EventValidationErrors {
@@ -51,6 +89,18 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
   const [currentUserId, setCurrentUserId] = useState<number | null>(null) // Supabase integer ID
   const [startDate, setStartDate] = useState<Date | undefined>(undefined)
   const [endDate, setEndDate] = useState<Date | undefined>(undefined)
+  
+  // Countries and cities data
+  const [countries, setCountries] = useState<CountryOption[]>([])
+  const [cities, setCities] = useState<CityOption[]>([])
+  const [loading, setLoading] = useState({
+    countries: false,
+    cities: false,
+  })
+  
+  // UI state for comboboxes
+  const [countryOpen, setCountryOpen] = useState(false)
+  const [cityOpen, setCityOpen] = useState(false)
 
   // Use the specific validation errors type
   const [validationErrors, setValidationErrors] = useState<EventValidationErrors>({})
@@ -115,9 +165,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
         const id = await getCurrentUserId()
         setCurrentUserId(id)
       } catch (error) {
-        console.error("Error fetching Supabase user ID:", error)
-        // Optionally handle the case where the ID cannot be fetched
-        // toast.error("Could not verify user session.");
+        toast.error("Error fetching Supabase user ID.")
       }
     }
     if (userId) { // Only fetch if Clerk user ID exists
@@ -126,6 +174,84 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
       setCurrentUserId(null)
     }
   }, [userId]) // Depend on Clerk's userId
+
+  // Add useEffect for fetching countries
+  useEffect(() => {
+    const fetchCountries = async () => {
+      setLoading((prevState) => ({ ...prevState, countries: true }))
+      try {
+        const response = await fetch("https://restcountries.com/v3.1/all")
+        if (!response.ok) throw new Error("Failed to fetch countries")
+        const data = await response.json()
+
+        const formattedCountries = data
+          .map((country: CountryData) => ({
+            value: country.cca2,
+            label: country.name.common,
+            fullName: country.name.common,
+          }))
+          .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
+
+        setCountries(formattedCountries)
+      } catch (error) {
+        toast.error("Failed to fetch countries. Please try again.")
+      } finally {
+        setLoading((prevState) => ({ ...prevState, countries: false }))
+      }
+    }
+
+    fetchCountries()
+  }, [])
+
+  // Add useEffect for fetching cities
+  useEffect(() => {
+    const fetchCities = async () => {
+      if (!newEvent.country) {
+        setCities([])
+        return
+      }
+
+      setLoading((prevState) => ({ ...prevState, cities: true }))
+      try {
+        const selectedCountry = countries.find((c) => c.value === newEvent.country)
+        if (!selectedCountry) {
+          throw new Error("Country not found")
+        }
+
+        const response = await fetch("https://countriesnow.space/api/v0.1/countries/states", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ country: selectedCountry.fullName }),
+        })
+
+        if (!response.ok) throw new Error("Failed to fetch states")
+        const data = await response.json()
+
+        if (!data.data?.states) {
+          throw new Error("No states data found")
+        }
+
+        const formattedCities = data.data.states
+          .map((state: StateData) => ({
+            value: state.name,
+            label: state.name,
+          }))
+          .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
+
+        setCities(formattedCities)
+      } catch (error) {
+        toast.error("Failed to fetch states. Please try again.")
+      } finally {
+        setLoading((prevState) => ({ ...prevState, cities: false }))
+      }
+    }
+
+    if (newEvent.country) {
+      fetchCities()
+    }
+  }, [newEvent.country, countries])
 
   // Update form data and clear validation error for the specific field
   const updateEventData = (field: keyof EventFormData, value: string) => {
@@ -160,9 +286,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
     if (!startDate) {
       errors.startDate = "Start date/time is required"
     } else if (endDate && startDate > endDate) {
-        // Add validation if end date exists and is before start date
         errors.startDate = "Start date cannot be after end date";
-        // Optionally add error to endDate too: errors.endDate = "End date cannot be before start date";
     }
 
     // Address validation
@@ -197,7 +321,6 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
         }
     }
 
-
     setValidationErrors(errors)
     return Object.keys(errors).length === 0 // Return true if no errors
   }
@@ -206,14 +329,12 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
   const handleCreateEvent = async () => {
     if (!validateForm()) {
       toast.error("Please fix the errors in the form.")
-      // Optional: Focus the first field with an error
       const firstErrorField = Object.keys(validationErrors)[0] as keyof EventValidationErrors | undefined;
       if (firstErrorField) {
         const element = document.getElementById(firstErrorField);
         element?.focus();
-        // Special focus handling for DateTimePicker might be needed if the above doesn't work
         if (firstErrorField === 'startDate') {
-            const datePickerButton = document.querySelector('#startDate button'); // Adjust selector as needed
+            const datePickerButton = document.querySelector('#startDate button');
             (datePickerButton as HTMLElement)?.focus();
         }
       }
@@ -222,7 +343,6 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
 
     if (!currentUserId) {
       toast.error("Authentication error. Please ensure you are logged in.")
-      // Consider prompting re-login or refreshing the page
       setIsLoading(false)
       return
     }
@@ -233,19 +353,17 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
     const eventData = {
       title: newEvent.title.trim(),
       description: newEvent.description.trim(),
-      start_time: startDate!.toISOString(), // Non-null assertion validated by validateForm
+      start_time: startDate!.toISOString(),
       end_time: endDate ? endDate.toISOString() : null,
-      community_id: parseInt(communityId), // Ensure communityId is a number
-      created_by: currentUserId, // Use the fetched Supabase integer ID
+      community_id: parseInt(communityId),
+      created_by: currentUserId,
       address: newEvent.address.trim(),
       city: newEvent.city.trim(),
       country: newEvent.country.trim(),
-      is_online: false, // Assuming physical event based on fields
+      is_online: false,
       location_url: newEvent.locationUrl.trim() || null,
       max_attendees: newEvent.maxAttendees ? parseInt(newEvent.maxAttendees) : null,
     }
-
-    console.log("Creating event with data:", eventData)
 
     try {
       const { data, error } = await supabase.from("events")
@@ -254,32 +372,25 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
         .single()
 
       if (error) {
-        console.error("Error creating event:", error)
         toast.error(`Failed to create event: ${error.message}`)
-        // Keep dialog open on error
       } else if (data) {
-        console.log("Event created successfully:", data)
         toast.success("Event created successfully!")
-        handleOpenChange(false) // Close dialog on success (will trigger resetForm)
+        handleOpenChange(false)
 
         if (onEventCreated) {
           onEventCreated()
         }
-        router.refresh() // Refresh data on the page
-        // Optional delay for refresh if needed
-        // setTimeout(() => router.refresh(), 300);
+        router.refresh()
       }
     } catch (error) {
-      console.error("Unexpected error creating event:", error)
       toast.error("An unexpected error occurred. Please try again.")
     } finally {
-      setIsLoading(false) // Ensure loading state is reset
+      setIsLoading(false)
     }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      {/* DialogTrigger remains hidden, opened programmatically */}
       <DialogTrigger id="create-event-dialog" className="hidden">
         Create Event
       </DialogTrigger>
@@ -288,18 +399,13 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
           <DialogTitle className="text-2xl font-bold">Create New Event</DialogTitle>
         </DialogHeader>
 
-        {/* Form Area - Make it scrollable */}
-        {/* Increased spacing with space-y-6 between form groups */}
-        <div className="flex-1 overflow-y-auto pr-2 no-scrollbar space-y-6 py-4"> {/* Increased spacing */}
+        <div className="flex-1 overflow-y-auto pr-2 no-scrollbar space-y-6 py-4">
           <style jsx global>{`
             .no-scrollbar::-webkit-scrollbar { display: none; }
             .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
           `}</style>
 
-          {/* Title */}
-          {/* Increased space between label and input using space-y-2 */}
-          <div className="space-y-2"> {/* Increased spacing */}
-            {/* Asterisk removed */}
+          <div className="space-y-2">
             <Label htmlFor="title" className="flex items-center font-medium">
               Event Title
             </Label>
@@ -311,17 +417,14 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
               className={cn(validationErrors.title && "border-destructive focus-visible:ring-destructive")}
               aria-invalid={Boolean(validationErrors.title)}
               aria-describedby="title-error"
-              required // Keep HTML required for semantics/browser hints if desired
+              required
             />
             {validationErrors.title && (
               <p id="title-error" className="text-sm text-destructive mt-1">{validationErrors.title}</p>
             )}
           </div>
 
-          {/* Description */}
-          {/* Increased space between label and input using space-y-2 */}
-          <div className="space-y-2"> {/* Increased spacing */}
-            {/* Asterisk removed */}
+          <div className="space-y-2">
             <Label htmlFor="description" className="flex items-center font-medium">
               Description
             </Label>
@@ -334,16 +437,14 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
               className={cn(validationErrors.description && "border-destructive focus-visible:ring-destructive")}
               aria-invalid={Boolean(validationErrors.description)}
               aria-describedby="description-error"
-              required // Keep HTML required
+              required
             />
             {validationErrors.description && (
               <p id="description-error" className="text-sm text-destructive mt-1">{validationErrors.description}</p>
             )}
           </div>
 
-          {/* Dates */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Start Date */}
             <div className="space-y-2">
               <Label htmlFor="startDate" className="flex items-center font-medium">
                 Start Date/Time
@@ -353,7 +454,6 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
                   value={startDate}
                   onChange={(date) => {
                     setStartDate(date);
-                    // Clear validation error for this field when it's changed
                     if (validationErrors.startDate) {
                       setValidationErrors(prev => {
                         const newErrors = { ...prev };
@@ -371,14 +471,12 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
               )}
             </div>
 
-            {/* End Date */}
             <div className="space-y-2">
               <Label htmlFor="endDateTime" className="font-medium">End Date/Time</Label>
               <DateTimePicker
                 value={endDate}
                 onChange={(date) => {
                   setEndDate(date);
-                  // Check if this resolves any validation errors with the start date
                   if (validationErrors.startDate && startDate && date && startDate <= date) {
                     setValidationErrors(prev => {
                       const newErrors = { ...prev };
@@ -389,79 +487,167 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
                 }}
                 label="End Time"
               />
-              {/* Placeholder for potential end date errors */}
             </div>
           </div>
 
-           {/* Address */}
-           {/* Increased space between label and input using space-y-2 */}
-           <div className="space-y-2"> {/* Increased spacing */}
-             {/* Asterisk removed */}
-             <Label htmlFor="address" className="flex items-center font-medium">
-               Address
-             </Label>
-             <Input
-               id="address"
-               value={newEvent.address}
-               onChange={(e) => updateEventData("address", e.target.value)}
-               placeholder="Enter street address"
-               className={cn(validationErrors.address && "border-destructive focus-visible:ring-destructive")}
-               aria-invalid={Boolean(validationErrors.address)}
-               aria-describedby="address-error"
-               required // Keep HTML required
-             />
-             {validationErrors.address && (
-               <p id="address-error" className="text-sm text-destructive mt-1">{validationErrors.address}</p>
-             )}
-           </div>
+          <div className="space-y-2">
+            <Label htmlFor="address" className="flex items-center font-medium">
+              Address
+            </Label>
+            <Input
+              id="address"
+              value={newEvent.address}
+              onChange={(e) => updateEventData("address", e.target.value)}
+              placeholder="Enter street address"
+              className={cn(validationErrors.address && "border-destructive focus-visible:ring-destructive")}
+              aria-invalid={Boolean(validationErrors.address)}
+              aria-describedby="address-error"
+              required
+            />
+            {validationErrors.address && (
+              <p id="address-error" className="text-sm text-destructive mt-1">{validationErrors.address}</p>
+            )}
+          </div>
 
-           {/* City / Country */}
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {/* Increased space between label and input using space-y-2 */}
-             <div className="space-y-2"> {/* Increased spacing */}
-               {/* Asterisk removed */}
-               <Label htmlFor="city" className="flex items-center font-medium">
-                 City
-               </Label>
-               <Input
-                 id="city"
-                 value={newEvent.city}
-                 onChange={(e) => updateEventData("city", e.target.value)}
-                 placeholder="City name"
-                 className={cn(validationErrors.city && "border-destructive focus-visible:ring-destructive")}
-                 aria-invalid={Boolean(validationErrors.city)}
-                 aria-describedby="city-error"
-                 required // Keep HTML required
-               />
-               {validationErrors.city && (
-                 <p id="city-error" className="text-sm text-destructive mt-1">{validationErrors.city}</p>
-               )}
-             </div>
-             {/* Increased space between label and input using space-y-2 */}
-             <div className="space-y-2"> {/* Increased spacing */}
-               {/* Asterisk removed */}
-               <Label htmlFor="country" className="flex items-center font-medium">
-                 Country
-               </Label>
-               <Input
-                 id="country"
-                 value={newEvent.country}
-                 onChange={(e) => updateEventData("country", e.target.value)}
-                 placeholder="Country name"
-                 className={cn(validationErrors.country && "border-destructive focus-visible:ring-destructive")}
-                 aria-invalid={Boolean(validationErrors.country)}
-                 aria-describedby="country-error"
-                 required // Keep HTML required
-               />
-               {validationErrors.country && (
-                 <p id="country-error" className="text-sm text-destructive mt-1">{validationErrors.country}</p>
-               )}
-             </div>
-           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="country" className="flex items-center font-medium">
+                Country
+              </Label>
+              <Popover open={countryOpen} onOpenChange={setCountryOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="country"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={countryOpen}
+                    aria-label="Select a country"
+                    className={cn(
+                      "w-full justify-between",
+                      validationErrors.country && "border-destructive focus-visible:ring-destructive",
+                      !newEvent.country && "text-muted-foreground"
+                    )}
+                    onClick={() => setCountryOpen(!countryOpen)}
+                    disabled={loading.countries}
+                  >
+                    {newEvent.country
+                      ? countries.find((country) => country.value === newEvent.country)?.label || "Select country"
+                      : "Select country"}
+                    {loading.countries ? (
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    ) : (
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search country..." />
+                    <CommandEmpty>No country found.</CommandEmpty>
+                    <CommandList className="max-h-[300px]">
+                      <CommandGroup>
+                        {countries.map((country) => (
+                          <CommandItem
+                            key={country.value}
+                            value={country.label}
+                            onSelect={() => {
+                              const value = country.value;
+                              updateEventData("country", value);
+                              updateEventData("city", ""); 
+                              setCountryOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                newEvent.country === country.value ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {country.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {validationErrors.country && (
+                <p id="country-error" className="text-sm text-destructive mt-1">{validationErrors.country}</p>
+              )}
+            </div>
 
-           {/* Location URL */}
-           {/* Increased space between label and input using space-y-2 */}
-           <div className="space-y-2"> {/* Increased spacing */}
+            <div className="space-y-2">
+              <Label htmlFor="city" className="flex items-center font-medium">
+                City
+              </Label>
+              <Popover open={cityOpen} onOpenChange={setCityOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    id="city"
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={cityOpen}
+                    aria-label="Select a city"
+                    className={cn(
+                      "w-full justify-between",
+                      validationErrors.city && "border-destructive focus-visible:ring-destructive",
+                      !newEvent.city && "text-muted-foreground"
+                    )}
+                    onClick={() => setCityOpen(!cityOpen)}
+                    disabled={loading.cities || !newEvent.country}
+                  >
+                    {newEvent.city
+                      ? cities.find((city) => city.value === newEvent.city)?.label || newEvent.city
+                      : newEvent.country 
+                        ? "Select city" 
+                        : "Select country first"}
+                    {loading.cities ? (
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    ) : (
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search city..." />
+                    <CommandEmpty>
+                      {!cities.length 
+                        ? "No cities available for the selected country." 
+                        : "No city found."}
+                    </CommandEmpty>
+                    <CommandList className="max-h-[300px]">
+                      <CommandGroup>
+                        {cities.map((city) => (
+                          <CommandItem
+                            key={city.value}
+                            value={city.label}
+                            onSelect={() => {
+                              updateEventData("city", city.value);
+                              setCityOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4",
+                                newEvent.city === city.value ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                            {city.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {validationErrors.city && (
+                <p id="city-error" className="text-sm text-destructive mt-1">{validationErrors.city}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="locationUrl" className="font-medium">Place Location URL</Label>
             <Input
               id="locationUrl"
@@ -477,10 +663,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
             )}
           </div>
 
-
-          {/* Max Attendees */}
-          {/* Increased space between label and input using space-y-2 */}
-          <div className="space-y-2"> {/* Increased spacing */}
+          <div className="space-y-2">
             <Label htmlFor="maxAttendees" className="font-medium">Maximum Attendees</Label>
             <Input
               id="maxAttendees"
@@ -497,11 +680,9 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
               <p id="maxAttendees-error" className="text-sm text-destructive mt-1">{validationErrors.maxAttendees}</p>
             )}
           </div>
-        </div> {/* End Scrollable Area */}
+        </div>
 
-        {/* Footer with Buttons */}
-        {/* Adjusted Footer Spacing */}
-        <DialogFooter className="pt-6 border-t mt-4"> {/* Adjusted spacing */}
+        <DialogFooter className="pt-6 border-t mt-4">
           <Button
             variant="outline"
             onClick={handleCancel}
@@ -517,7 +698,6 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
             className="cursor-pointer flex items-center gap-2"
             type="button"
           >
-            {/* ... loading spinner ... */}
             {isLoading ? "Creating..." : "Create Event"}
           </Button>
         </DialogFooter>

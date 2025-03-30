@@ -148,7 +148,6 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
 
         setCountries(formattedCountries)
       } catch (error) {
-        console.error("Error fetching countries:", error)
         toast.error("Failed to fetch countries. Please try again.")
       } finally {
         setLoading((prevState) => ({ ...prevState, countries: false }))
@@ -197,7 +196,6 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
 
         setCities(formattedCities)
       } catch (error) {
-        console.error("Error fetching states:", error)
         toast.error("Failed to fetch states. Please try again.")
       } finally {
         setLoading((prevState) => ({ ...prevState, cities: false }))
@@ -287,7 +285,6 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
         router.refresh();
       }, 300);
     } catch (error) {
-      console.error("Error saving community:", error)
       toast.error(error instanceof Error ? error.message : "Failed to create community. Please try again.")
     } finally {
       setLoading(prev => ({ ...prev, submit: false }))
@@ -355,7 +352,6 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
   const handleImageUpload = (file: File) => {
     // This function is called but doesn't do anything meaningful now
     // We'll keep it to maintain the component interface, but it won't set imageFile anymore
-    console.log("Image uploaded, but feature currently disabled:", file.name);
   }
 
   // Add new handler for tab clicks
