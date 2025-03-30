@@ -1,5 +1,3 @@
-/* File: app/community/[id]/event/[eventId]/page.tsx */
-
 // --- SINGLE SET OF IMPORTS ---
 import { EventDetail } from "@/components/event-page/event-detail";
 import { notFound } from "next/navigation";
@@ -87,7 +85,6 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   }
 
   const clerkUserId = event.created_by_user?.clerk_user_id;
-  console.log("Clerk User ID:", clerkUserId);
   let organizerUsername = 'Unknown Organizer';
   let organizerImageFromClerk: string | null | undefined = undefined; // Store Clerk result separately
 
