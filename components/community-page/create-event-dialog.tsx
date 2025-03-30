@@ -343,36 +343,29 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
 
           {/* Dates */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Increased space between label and input using space-y-2 */}
-            <div className="space-y-2"> {/* Increased spacing */}
-              {/* Asterisk removed */}
+            {/* Start Date */}
+            <div className="space-y-2">
               <Label htmlFor="startDate" className="flex items-center font-medium">
                 Start Date/Time
               </Label>
-              {/* Wrap DateTimePicker for error styling */}
-              <div
-                id="startDate" // Keep ID for potential focus targeting
-                className={cn(
-                    "rounded-md", // Base styling if needed
-                    validationErrors.startDate && "border border-destructive ring-1 ring-destructive" // Error styling on the wrapper
-                )}
-              >
+              <div id="startDate" className={cn(/* ... */)}>
                 <DateTimePicker
                   value={startDate}
+                  // THIS IS THE PROBLEM AREA 1: Logic is missing!
                   onChange={(date) => { /* ... onChange logic ... */ }}
                   aria-describedby="startDate-error"
                   label="Start Time"
                 />
               </div>
-              {validationErrors.startDate && (
-                <p id="startDate-error" className="text-sm text-destructive mt-1">{validationErrors.startDate}</p>
-              )}
+              {/* ... error message ... */}
             </div>
-             {/* Increased space between label and input using space-y-2 */}
-            <div className="space-y-2"> {/* Increased spacing */}
+
+            {/* End Date */}
+            <div className="space-y-2">
               <Label htmlFor="endDateTime" className="font-medium">End Date/Time</Label>
               <DateTimePicker
                 value={endDate}
+                 // THIS IS THE PROBLEM AREA 2: Logic is missing!
                 onChange={(date) => { /* ... onChange logic ... */ }}
                 label="End Time"
               />
