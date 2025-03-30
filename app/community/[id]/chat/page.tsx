@@ -77,6 +77,11 @@ export default async function CommunityChatPage({ params }: PageProps) {
     image: null,
     rules: [],
     createdAt: community.created_at,
+    // Fix the owner property to match the expected Community type
+    owner: {
+      useri_id: parseInt(community.owner_id) || 0,
+      clerk_user_id: community.clerk_owner_id || ''
+    },
     // Mock data for chat system
     chatRooms: [
       {
