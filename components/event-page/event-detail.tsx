@@ -21,12 +21,24 @@ interface EventDetailProps {
   communityName?: string
   communityImage?: string
   communityMemberCount?: number
+  
+  // Add these new props that are being passed from the page component
+  eventTitle?: string
+  eventDescription?: string
+  eventStartTime?: string
+  eventEndTime?: string
+  eventAddress?: string
+  eventCity?: string
+  eventCountry?: string
+  eventLocationUrl?: string
+  eventMaxAttendees?: number
+  
   attendees: Array<{
     event_id: number
     user_id: number
     rsvp_status: string
     rsvp_time: string
-    user: UserDetails  // Replace 'any' with the specific user type
+    user: UserDetails
   }>
 }
 
@@ -37,22 +49,42 @@ export async function EventDetail({
   communityName,
   communityImage,
   communityMemberCount,
+  // Can use the new props here if needed
+  eventTitle,
+  eventDescription,
+  eventStartTime,
+  eventEndTime,
+  eventAddress,
+  eventCity,
+  eventCountry,
+  eventLocationUrl,
+  eventMaxAttendees,
+  attendees
 }: EventDetailProps) {
+  // Still fetch event details if the props weren't provided
   const event = await getEventWithDetails(eventId)
 
   if (!event) {
     return <div>Event not found</div>
   }
   
+  // Use provided data or fall back to fetched event data
+  const title = eventTitle || event.title;
+  const description = eventDescription || event.description;
+  const startTime = eventStartTime || event.start_time;
+  const endTime = eventEndTime || event.end_time;
+  const address = eventAddress || event.address;
+
   console.log("Event data:", event);
-  console.log("Address:", event.address);
+  console.log("Address:", address);
+  
   return (
     <div className="space-y-6">
       {/* Event Header Banner */}
       <div className="relative w-full h-48 bg-black mb-6 rounded-lg overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
         <div className="absolute bottom-0 left-0 p-6 text-white">
-          <h1 className="text-3xl font-bold">{event.title}</h1>
+          <h1 className="text-3xl font-bold">{title}</h1>
         </div>
       </div>
 
@@ -62,20 +94,18 @@ export async function EventDetail({
         <div className="md:col-span-2 space-y-6">
             <Card className="p-6">
                 <h2 className="text-xl font-bold mb-4">About this event</h2>
-                <p className="text-muted-foreground">{event.description}</p>
+                <p className="text-muted-foreground">{description}</p>
             </Card>
 
             {/* Event Details Card */}
             <Card className="p-6">
                 <h2 className="text-xl font-bold mb-4">Event Details</h2>
                 <div className="space-y-4">
-
-
                     <div className="flex items-center gap-3">
                         <Calendar className="h-5 w-5 text-muted-foreground" />
                         <div>
                             <p className="font-medium">
-                            {new Date(event.start_time).toLocaleDateString('en-US', {
+                            {new Date(startTime).toLocaleDateString('en-US', {
                                 weekday: 'long',
                                 year: 'numeric',
                                 month: 'long',
@@ -89,12 +119,12 @@ export async function EventDetail({
                         <Clock className="h-5 w-5 text-muted-foreground" />
                         <div>
                             <p className="font-medium">
-                            {new Date(event.start_time).toLocaleTimeString('en-US', {
+                            {new Date(startTime).toLocaleTimeString('en-US', {
                                 hour: '2-digit',
                                 minute: '2-digit',
                                 hour12: false,
                                 timeZone: 'UTC'
-                            })} - {new Date(event.end_time).toLocaleTimeString('en-US', {
+                            })} - {new Date(endTime).toLocaleTimeString('en-US', {
                                 hour: '2-digit',
                                 minute: '2-digit',
                                 hour12: false,
@@ -104,11 +134,11 @@ export async function EventDetail({
                         </div>
                     </div>
 
-                    {event.address && (
+                    {address && (
                         <div className="flex items-center gap-3">
                         <MapPin className="h-5 w-5 text-muted-foreground" />
                         <div>
-                            <p className="font-medium">{event.address}</p>
+                            <p className="font-medium">{address}</p>
                         </div>
                         </div>
                     )}
@@ -117,11 +147,10 @@ export async function EventDetail({
                         <Users className="h-5 w-5 text-muted-foreground" />
                         <div>
                         <p className="font-medium">
-                            {event.attendees?.length || 0} attendees
+                            {(attendees || event.attendees)?.length || 0} attendees
                         </p>
                         </div>
                     </div>  
-
                 </div>
             </Card>
                       
@@ -137,7 +166,7 @@ export async function EventDetail({
                 <div className="mt-3 flex items-start gap-2">
                     <MapPin className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-muted-foreground">
-                    {event.address || "Address not provided for this event"}
+                    {address || "Address not provided for this event"}
                     </p>
                 </div>
             </Card>

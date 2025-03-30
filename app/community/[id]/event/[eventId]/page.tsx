@@ -1,11 +1,24 @@
-import { EventDetail } from "@/components/event-page/event-detail"
-import { notFound } from "next/navigation"
-import { createAdminClient } from '@/lib/supabase'
-import { createClerkClient } from '@clerk/nextjs/server'
+/* File: app/community/[id]/event/[eventId]/page.tsx */
 
-// Fetch community data
+// --- SINGLE SET OF IMPORTS ---
+import { EventDetail } from "@/components/event-page/event-detail";
+import { notFound } from "next/navigation";
+import { createAdminClient } from '@/lib/supabase';
+import { createClerkClient } from '@clerk/nextjs/server';
+
+// --- Interface Definition (Keep as is) ---
+interface EventDetailPageProps {
+  params: {
+    id: string;
+    eventId: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+// --- Fetching functions (Keep as is - ensure they are defined only ONCE) ---
+
 async function getCommunity(communityId: string) {
-  const supabase = createAdminClient()
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from('communities')
     .select(`
@@ -14,19 +27,18 @@ async function getCommunity(communityId: string) {
       members:community_members(*)
     `)
     .eq('id', communityId)
-    .single()
+    .single();
 
   if (error) {
-    console.error('Error fetching community:', error)
-    return null
+    console.error('Error fetching community:', error);
+    return null;
   }
-
-  return data
+  return data;
 }
 
-// Fetch event data
 async function getEvent(eventId: string) {
-  const supabase = createAdminClient()
+  const supabase = createAdminClient();
+  // Ensure you select all necessary event fields here
   const { data, error } = await supabase
     .from('events')
     .select(`
@@ -34,82 +46,101 @@ async function getEvent(eventId: string) {
       created_by_user:created_by(*)
     `)
     .eq('id', eventId)
-    .single()
+    .single();
 
   if (error) {
-    console.error('Error fetching event:', error)
-    return null
+    console.error('Error fetching event:', error);
+    return null;
   }
-
-  return data
+  return data;
 }
 
-// Add this new function to fetch event attendees
 async function getEventAttendees(eventId: string) {
-  const supabase = createAdminClient()
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from('event_attendees')
     .select(`
       *,
       user:user_id(*)
     `)
-    .eq('event_id', eventId)
+    .eq('event_id', eventId);
 
   if (error) {
-    console.error('Error fetching event attendees:', error)
-    return []
+    console.error('Error fetching event attendees:', error);
+    return [];
   }
-
-  return data
+  return data;
 }
 
-export default async function EventDetailPage({ params }: { params: { id: string; eventId: string } }) {
-  const { id, eventId } = params
+// --- Page Component Definition (Ensure it is defined only ONCE) ---
+export default async function EventDetailPage({ params }: EventDetailPageProps) {
+  const { id, eventId } = params;
 
-  // Update Promise.all to include attendees
   const [community, event, attendees] = await Promise.all([
     getCommunity(id),
     getEvent(eventId),
     getEventAttendees(eventId)
-  ])
+  ]);
 
   if (!community || !event) {
-    return notFound()
+    return notFound();
   }
 
-  // New: Initialize Clerk client with secret key
-  const clerkUserId = event.created_by_user.clerk_user_id
-  console.log("Clerk User ID:", clerkUserId)
-  let organizerUsername = 'Unknown Organizer'
-  const organizerImage = '' 
-  
+  const clerkUserId = event.created_by_user?.clerk_user_id;
+  console.log("Clerk User ID:", clerkUserId);
+  let organizerUsername = 'Unknown Organizer';
+  let organizerImageFromClerk: string | null | undefined = undefined; // Store Clerk result separately
+
   if (clerkUserId) {
     try {
-      const client = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
-      const user = await client.users.getUser(clerkUserId)
-      organizerUsername = user.username || 'Unknown Organizer'
+      const client = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+      const user = await client.users.getUser(clerkUserId);
+      organizerUsername = user.username || 'Unknown Organizer';
+      organizerImageFromClerk = user.imageUrl; // Get potential image URL
     } catch (err) {
-      console.error('Error fetching clerk user info:', err)
+      console.error('Error fetching clerk user info:', err);
     }
   } else {
-    console.error("No clerk_user_id found in event.created_by_user:", event.created_by_user)
+    console.error("No clerk_user_id found in event.created_by_user:", event.created_by_user);
   }
+
+  // Define a fallback image URL (replace with your actual path or URL)
+  const defaultOrganizerImage = '/images/default-avatar.png';
 
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        <EventDetail 
+        <EventDetail
+          // Pass community/event IDs
           communityId={community.id}
           eventId={eventId}
+
+          // Pass event data (ensure EventDetail expects these)
+          eventTitle={event.title}
+          eventDescription={event.description}
+          eventStartTime={event.start_time}
+          eventEndTime={event.end_time}
+          eventAddress={event.address}
+          eventCity={event.city}
+          eventCountry={event.country}
+          eventLocationUrl={event.location_url}
+          eventMaxAttendees={event.max_attendees}
+
+          // Pass organizer details
           organizerUsername={organizerUsername}
-          organizerImage={organizerImage}
+          // Use nullish coalescing to provide fallback if image is null/undefined
+          organizerImage={organizerImageFromClerk ?? defaultOrganizerImage}
+
+          // Pass community details (ensure EventDetail expects these)
           communityName={community.name}
-          communityImage={community.image_url}
-          communityMemberCount={community.member_count}
+          // Provide fallback for community image too if needed
+          communityImage={community.image_url ?? '/images/default-community.png'}
+          communityMemberCount={community.member_count ?? 0} // Provide fallback if count can be null
+
+          // Pass attendees
           attendees={attendees}
         />
       </main>
     </div>
-  )
+  );
 }
-
