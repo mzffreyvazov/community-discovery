@@ -64,7 +64,7 @@ async function getEventAttendees(eventId: string) {
 }
 
 export default async function EventDetailPage({ params }: { params: { id: string; eventId: string } }) {
-  const { id, eventId } = await params
+  const { id, eventId } = params
 
   // Update Promise.all to include attendees
   const [community, event, attendees] = await Promise.all([
