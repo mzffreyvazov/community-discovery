@@ -147,7 +147,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
           .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
 
         setCountries(formattedCountries)
-      } catch (error: any) {
+      } catch {
         toast.error("Failed to fetch countries. Please try again.")
       } finally {
         setLoading((prevState) => ({ ...prevState, countries: false }))
@@ -195,7 +195,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
           .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
 
         setCities(formattedCities)
-      } catch (error: any) {
+      } catch {
         toast.error("Failed to fetch states. Please try again.")
       } finally {
         setLoading((prevState) => ({ ...prevState, cities: false }))

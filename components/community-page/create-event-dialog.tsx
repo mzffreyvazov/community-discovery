@@ -241,7 +241,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
           .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
 
         setCities(formattedCities)
-      } catch (error: any) {
+      } catch {
         toast.error("Failed to fetch states. Please try again.")
       } finally {
         setLoading((prevState) => ({ ...prevState, cities: false }))

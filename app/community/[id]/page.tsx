@@ -8,10 +8,6 @@ import { CommunityAbout } from '@/components/community-page/community-about'
 import EventsSectionWrapper from '@/components/event-creation/event-section-wrapper'
 
 // Define interfaces for TypeScript
-interface Tag {
-  id: string;
-  name: string;
-}
 
 interface CommunityTagWithDetails {
   tag_id: string;
