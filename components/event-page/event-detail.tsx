@@ -212,14 +212,10 @@ export async function EventDetail({
             <div className="p-4">
             <h2 className="text-lg font-semibold mb-3">Community</h2>
             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-md overflow-hidden bg-muted flex items-center justify-center">
-                {communityImage ? (
-                    <img src={communityImage} alt={communityName} className="w-full h-full object-cover" />
-                ) : (
+                <div className="w-10 h-10 rounded-md overflow-hidden bg-muted flex items-center justify-center flex-shrink-0">
                     <div className="w-full h-full flex items-center justify-center text-base font-bold">
-                    {communityName?.[0] ?? 'C'}
+                        {communityName ? communityName.charAt(0).toUpperCase() : 'C'}
                     </div>
-                )}
                 </div>
                 <div>
                 <p className="font-medium">{communityName ?? 'Community Name'}</p>

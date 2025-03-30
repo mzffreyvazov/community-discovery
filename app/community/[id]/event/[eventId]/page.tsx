@@ -8,14 +8,13 @@ import { createClerkClient } from '@clerk/nextjs/server';
 
 // --- Interface Definition (Corrected to reflect runtime requirement) ---
 interface EventDetailPageProps {
-  // params IS a Promise in this runtime environment
+  // params is a Promise resolving to an object with id and eventId
   params: Promise<{
     id: string;
     eventId: string;
   }>;
-  // searchParams might also need to be a Promise if the same pattern applies,
-  // but we'll keep it as is unless errors indicate otherwise.
-  searchParams?: { [key: string]: string | string[] | undefined };
+  // searchParams now also needs to be a Promise resolving to the appropriate type
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 // --- Fetching functions (Keep as is) ---
