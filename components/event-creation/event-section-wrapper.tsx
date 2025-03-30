@@ -29,12 +29,12 @@ export default function EventsSectionWrapper({ communityId }: EventsSectionWrapp
   
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Upcoming Events</h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3 sm:gap-0">
+        <h2 className="text-xl font-bold sm:text-left w-full sm:w-auto">Upcoming Events</h2>
         
         {/* Only show controls when there are events */}
         {eventCount > 0 && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto sm:justify-end">
             <EventFilterControl 
               sortOption={sortOption} 
               onSortChange={setSortOption} 
@@ -44,12 +44,22 @@ export default function EventsSectionWrapper({ communityId }: EventsSectionWrapp
         )}
       </div>
       
-      <EventsPreview 
-        communityId={communityId} 
-        sortOption={sortOption} 
-        refreshKey={refreshKey}
-        onEventCountChange={handleEventCountChange} // Pass the callback
-      />
+      {/* Add mobile-specific styles to the wrapper for better containment */}
+      <div className="sm:p-0 -mx-2 sm:mx-0 px-2 sm:px-0">
+        <EventsPreview 
+          communityId={communityId} 
+          sortOption={sortOption} 
+          refreshKey={refreshKey}
+          onEventCountChange={handleEventCountChange} // Pass the callback
+        />
+      </div>
+      
+      {/* Show button centered on mobile when no events */}
+      {eventCount === 0 && (
+        <div className="mt-4 flex justify-center sm:justify-start">
+          <CreateEventButton />
+        </div>
+      )}
       
       <CreateEventDialog 
         communityId={communityId} 
