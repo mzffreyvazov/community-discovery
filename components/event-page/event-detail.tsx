@@ -47,7 +47,6 @@ export async function EventDetail({
   organizerUsername, 
   organizerImage,
   communityName,
-  communityImage,
   communityMemberCount,
   // Can use the new props here if needed
   eventTitle,
