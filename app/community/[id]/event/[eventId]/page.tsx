@@ -6,12 +6,12 @@ import { notFound } from "next/navigation";
 import { createAdminClient } from '@/lib/supabase';
 import { createClerkClient } from '@clerk/nextjs/server';
 
-// --- Interface Definition (Keep as is) ---
+// --- Interface Definition (Updated to match PageProps from [id]/page.tsx) ---
 interface EventDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
     eventId: string;
-  };
+  }>;
   searchParams?: { [key: string]: string | string[] | undefined };
 }
 
@@ -74,7 +74,7 @@ async function getEventAttendees(eventId: string) {
 
 // --- Page Component Definition (Ensure it is defined only ONCE) ---
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
-  const { id, eventId } = await params;  // Ensure params is awaited here
+  const { id, eventId } = await params;  // This await is now correct and necessary
 
   const [community, event, attendees] = await Promise.all([
     getCommunity(id),
