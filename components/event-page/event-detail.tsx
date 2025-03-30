@@ -55,10 +55,6 @@ export async function EventDetail({
   eventStartTime,
   eventEndTime,
   eventAddress,
-  eventCity,
-  eventCountry,
-  eventLocationUrl,
-  eventMaxAttendees,
   attendees
 }: EventDetailProps) {
   // Still fetch event details if the props weren't provided

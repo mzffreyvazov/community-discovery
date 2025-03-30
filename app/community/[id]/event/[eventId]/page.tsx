@@ -74,7 +74,7 @@ async function getEventAttendees(eventId: string) {
 
 // --- Page Component Definition (Ensure it is defined only ONCE) ---
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
-  const { id, eventId } = params;
+  const { id, eventId } = await params;
 
   const [community, event, attendees] = await Promise.all([
     getCommunity(id),
