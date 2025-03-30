@@ -348,16 +348,27 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
               <Label htmlFor="startDate" className="flex items-center font-medium">
                 Start Date/Time
               </Label>
-              <div id="startDate" className={cn(/* ... */)}>
+              <div id="startDate" className={cn(validationErrors.startDate && "border-destructive")}>
                 <DateTimePicker
                   value={startDate}
-                  // THIS IS THE PROBLEM AREA 1: Logic is missing!
-                  onChange={(date) => { /* ... onChange logic ... */ }}
+                  onChange={(date) => {
+                    setStartDate(date);
+                    // Clear validation error for this field when it's changed
+                    if (validationErrors.startDate) {
+                      setValidationErrors(prev => {
+                        const newErrors = { ...prev };
+                        delete newErrors.startDate;
+                        return newErrors;
+                      });
+                    }
+                  }}
                   aria-describedby="startDate-error"
                   label="Start Time"
                 />
               </div>
-              {/* ... error message ... */}
+              {validationErrors.startDate && (
+                <p id="startDate-error" className="text-sm text-destructive mt-1">{validationErrors.startDate}</p>
+              )}
             </div>
 
             {/* End Date */}
@@ -365,11 +376,20 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
               <Label htmlFor="endDateTime" className="font-medium">End Date/Time</Label>
               <DateTimePicker
                 value={endDate}
-                 // THIS IS THE PROBLEM AREA 2: Logic is missing!
-                onChange={(date) => { /* ... onChange logic ... */ }}
+                onChange={(date) => {
+                  setEndDate(date);
+                  // Check if this resolves any validation errors with the start date
+                  if (validationErrors.startDate && startDate && date && startDate <= date) {
+                    setValidationErrors(prev => {
+                      const newErrors = { ...prev };
+                      delete newErrors.startDate;
+                      return newErrors;
+                    });
+                  }
+                }}
                 label="End Time"
               />
-               {/* Placeholder for potential end date errors */}
+              {/* Placeholder for potential end date errors */}
             </div>
           </div>
 
