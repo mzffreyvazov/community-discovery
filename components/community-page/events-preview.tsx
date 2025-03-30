@@ -188,6 +188,7 @@ export function EventsPreview({
           <Card className="hover:shadow-md transition-shadow cursor-pointer mb-6">
             <CardHeader className="pb-2">
               <CardTitle className="text-xl">{event.title}</CardTitle>
+              <p className="text-sm text-muted-foreground line-clamp-2 mt-2">{event.description}</p>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-2 text-sm">
@@ -214,13 +215,13 @@ export function EventsPreview({
                 <span>{event.isOnline ? "Online Event" : event.location}</span>
               </div>
 
-              <p className="text-sm text-muted-foreground line-clamp-2 mt-2">{event.description}</p>
+              
 
               <div className="flex -space-x-2 mt-3">
                 {event.attendees.slice(0, 5).map((attendee, index) => (
                   <div key={index} className="w-7 h-7 rounded-full border-2 border-background overflow-hidden">
                     <img
-                      src={attendee.avatar || "/placeholder.svg?height=28&width=28"}
+                      src={attendee.avatar || "/placeholder.jpg?height=28&width=28"}
                       alt={attendee.name}
                       className="w-full h-full object-cover"
                     />
