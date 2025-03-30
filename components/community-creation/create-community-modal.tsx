@@ -147,7 +147,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
           .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
 
         setCountries(formattedCountries)
-      } catch (error) {
+      } catch (error: any) {
         toast.error("Failed to fetch countries. Please try again.")
       } finally {
         setLoading((prevState) => ({ ...prevState, countries: false }))
@@ -195,7 +195,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
           .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
 
         setCities(formattedCities)
-      } catch (error) {
+      } catch (error: any) {
         toast.error("Failed to fetch states. Please try again.")
       } finally {
         setLoading((prevState) => ({ ...prevState, cities: false }))
@@ -256,7 +256,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
       const cityName = communityData.city || ""
 
       // Save the community data
-      const { success, error } = await createFullCommunity(
+      const { success } = await createFullCommunity(
         {
           name: communityData.name,
           description: communityData.description,
@@ -270,8 +270,8 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
         communityData.tags
       )
 
-      if (!success || error) {
-        throw new Error(error?.message || "Failed to create community.")
+      if (!success) {
+        throw new Error("Failed to create community.")
       }
 
       // Show success toast
@@ -349,7 +349,7 @@ export function CreateCommunityModal({ isOpen, onClose }: CreateCommunityModalPr
   }
 
   // Remove or modify this function since imageFile state is unused
-  const handleImageUpload = (file: File) => {
+  const handleImageUpload = () => {
     // This function is called but doesn't do anything meaningful now
     // We'll keep it to maintain the component interface, but it won't set imageFile anymore
   }

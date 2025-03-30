@@ -49,7 +49,7 @@ interface EventChatProps {
   isModerator: boolean
 }
 
-export function EventChat({ event, currentUser, isModerator }: EventChatProps) {
+export function EventChat({ event, currentUser }: EventChatProps) {
   const [messageInput, setMessageInput] = useState("")
   const [messages, setMessages] = useState<Message[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)

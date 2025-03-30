@@ -3,7 +3,15 @@ import { Button } from "@/components/ui/button"
 import { Calendar, Clock, MapPin, Users, Heart, Share2 } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
+
+// Define a more specific user type to replace 'any'
+interface UserDetails {
+  id: number;
+  name?: string;
+  email?: string;
+  avatar_url?: string;
+  // Add other user properties as needed
+}
 
 interface EventDetailProps {
   communityId: string
@@ -18,12 +26,11 @@ interface EventDetailProps {
     user_id: number
     rsvp_status: string
     rsvp_time: string
-    user: any  // You might want to type this more specifically based on your user structure
+    user: UserDetails  // Replace 'any' with the specific user type
   }>
 }
 
 export async function EventDetail({ 
-  communityId, 
   eventId, 
   organizerUsername, 
   organizerImage,
@@ -37,7 +44,6 @@ export async function EventDetail({
     return <div>Event not found</div>
   }
   
-  const placeholderMapUrl = "community-discovery\components\event-page\file.jpeg"
   console.log("Event data:", event);
   console.log("Address:", event.address);
   return (

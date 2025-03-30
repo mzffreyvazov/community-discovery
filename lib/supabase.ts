@@ -22,15 +22,22 @@ export const createAdminClient = () => {
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
 
+// Define a more specific error type
+interface RetryableError extends Error {
+  code?: string;
+  message: string;
+}
+
 async function withRetry<T>(fn: () => Promise<T>): Promise<T> {
   let lastError;
   
   for (let i = 0; i < MAX_RETRIES; i++) {
     try {
       return await fn();
-    } catch (error: any) {
+    } catch (error: unknown) {
       lastError = error;
-      if (error.code === 'ECONNRESET') {
+      // Type assertion to treat error as RetryableError
+      if ((error as RetryableError).code === 'ECONNRESET') {
         console.log(`Retry attempt ${i + 1} after connection reset`);
         await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * (i + 1)));
         continue;

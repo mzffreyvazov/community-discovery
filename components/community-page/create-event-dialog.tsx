@@ -164,7 +164,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
       try {
         const id = await getCurrentUserId()
         setCurrentUserId(id)
-      } catch (error) {
+      } catch {
         toast.error("Error fetching Supabase user ID.")
       }
     }
@@ -193,7 +193,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
           .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
 
         setCountries(formattedCountries)
-      } catch (error) {
+      } catch {
         toast.error("Failed to fetch countries. Please try again.")
       } finally {
         setLoading((prevState) => ({ ...prevState, countries: false }))
@@ -241,7 +241,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
           .sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label))
 
         setCities(formattedCities)
-      } catch (error) {
+      } catch (error: any) {
         toast.error("Failed to fetch states. Please try again.")
       } finally {
         setLoading((prevState) => ({ ...prevState, cities: false }))
@@ -316,7 +316,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
     if (newEvent.locationUrl.trim()) {
         try {
             new URL(newEvent.locationUrl.trim());
-        } catch (_) {
+        } catch {
             errors.locationUrl = "Please enter a valid URL (e.g., https://maps.google.com)";
         }
     }
@@ -382,7 +382,7 @@ export function CreateEventDialog({ communityId, onEventCreated }: CreateEventDi
         }
         router.refresh()
       }
-    } catch (error) {
+    } catch {
       toast.error("An unexpected error occurred. Please try again.")
     } finally {
       setIsLoading(false)

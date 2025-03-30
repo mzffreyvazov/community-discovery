@@ -13,11 +13,6 @@ interface Tag {
   name: string;
 }
 
-interface CommunityTag {
-  tag_id: string;
-  tags: Tag;
-}
-
 interface CommunityTagWithDetails {
   tag_id: string;
   tags: {

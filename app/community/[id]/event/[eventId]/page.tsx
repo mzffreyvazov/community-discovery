@@ -81,7 +81,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
   const clerkUserId = event.created_by_user.clerk_user_id
   console.log("Clerk User ID:", clerkUserId)
   let organizerUsername = 'Unknown Organizer'
-  let organizerImage = '' 
+  const organizerImage = '' 
   
   if (clerkUserId) {
     try {
