@@ -45,9 +45,15 @@ interface EventsPreviewProps {
   communityId: string;
   sortOption: SortOption;
   refreshKey?: number; // Add a refresh key to force re-fetch
+  onEventCountChange?: (count: number) => void; // Add callback prop
 }
 
-export function EventsPreview({ communityId, sortOption, refreshKey = 0 }: EventsPreviewProps): JSX.Element {
+export function EventsPreview({ 
+  communityId, 
+  sortOption, 
+  refreshKey = 0,
+  onEventCountChange 
+}: EventsPreviewProps): JSX.Element {
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -126,6 +132,13 @@ export function EventsPreview({ communityId, sortOption, refreshKey = 0 }: Event
     fetchEvents()
   }, effectDependencies) // Use the memoized dependencies array
 
+  // Effect to update parent component with event count
+  useEffect(() => {
+    if (onEventCountChange) {
+      onEventCountChange(events.length);
+    }
+  }, [events.length, onEventCountChange]);
+
   // Sort events based on provided sort option
   const sortedEvents = [...events].sort((a, b) => {
     if (sortOption === 'newest') {
@@ -161,7 +174,7 @@ export function EventsPreview({ communityId, sortOption, refreshKey = 0 }: Event
       <div className="text-center py-12 bg-muted/30 rounded-lg">
         <h3 className="text-lg font-medium mb-2">No upcoming events</h3>
         <p className="text-muted-foreground mb-4">Create an event to bring community members together!</p>
-        <Button onClick={() => document.getElementById("create-event-dialog")?.click()}>
+        <Button className="cursor-pointer" onClick={() => document.getElementById("create-event-dialog")?.click()}>
           Create Event
         </Button>
       </div>
