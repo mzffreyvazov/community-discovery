@@ -54,12 +54,12 @@ export default function EventsSectionWrapper({ communityId }: EventsSectionWrapp
         />
       </div>
       
-      {/* Show button centered on mobile when no events */}
+      {/* Show button centered on mobile when no events
       {eventCount === 0 && (
         <div className="mt-4 flex justify-center sm:justify-start">
           <CreateEventButton />
         </div>
-      )}
+      )} */}
       
       <CreateEventDialog 
         communityId={communityId} 
