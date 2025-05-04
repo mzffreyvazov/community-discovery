@@ -53,7 +53,7 @@ export default async function DiscoverPage() {
   ];
 
   return (
-    <div className="max-w-screen-2xl mx-auto px-4">
+    <div className="max-w-7xl mx-auto px-4">
       {/* --- TOP HERO SECTION --- */}
       <section className="flex flex-col items-center justify-center pt-8 pb-4">
         <h1 className="text-4xl font-bold text-center mb-2">Discover Communities</h1>

@@ -45,3 +45,6 @@ next-env.d.ts
 
 # files
 *.pdf
+!README.md
+*.md
+*.txt
