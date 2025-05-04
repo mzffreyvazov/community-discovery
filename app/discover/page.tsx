@@ -19,7 +19,6 @@ interface CommunityTag {
 
 export default async function DiscoverPage() {
   const supabase = createAdminClient()
-  
   // Fetch both communities and tags
   const [{ data: communities }, { data: categories }] = await Promise.all([
     supabase
@@ -40,40 +39,60 @@ export default async function DiscoverPage() {
       .order('name')
   ])
 
+  // Category pills for the search bar
+  const categoryPills = [
+    'All',
+    'Outdoors',
+    'Arts',
+    'Technology',
+    'Food',
+    'Books',
+    'Fitness',
+    'Music',
+    'Gaming',
+  ];
+
   return (
-    <div className="max-w-7xl mx-auto px-4"> {/* Removed py-8 from here */}
-      {/* --- HEADER --- */}
-      <header className="mb-8 border-b pb-4"> {/* No changes needed *inside* the header */}
-        <div className="flex items-center justify-between flex-col sm:flex-row">
-          <div>
-            <h1 className="text-2xl font-bold">Discover Communities</h1>
-            <p className="text-muted-foreground">
-              Find and join communities that match your interests and location
-            </p>
+    <div className="max-w-screen-2xl mx-auto px-4">
+      {/* --- TOP HERO SECTION --- */}
+      <section className="flex flex-col items-center justify-center pt-8 pb-4">
+        <h1 className="text-4xl font-bold text-center mb-2">Discover Communities</h1>
+        <p className="text-lg text-muted-foreground text-center mb-4">
+          Find groups that match your interests
+        </p>
+        {/* Search Bar Row */}
+        <div className="flex flex-col w-full max-w-3xl gap-4">
+          <div className="flex w-full gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <input
+                type="text"
+                placeholder="Search interests or communities..."
+                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-base"
+              />
+            </div>
+            <button className="px-8 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-900 transition-colors">
+              Search
+            </button>
           </div>
-            <CreateCommunityButton />
-        </div>
-
-        {/* Search and Filters Row - remains the same */} 
-        <div className="flex flex-col sm:flex-row gap-4 items-center mt-6">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <input
-              type="text"
-              placeholder="Search communities, interests, or keywords"
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
+          {/* Category Pills */}
+          <div className="flex flex-wrap gap-3 justify-center mt-2">
+            {categoryPills.map((cat, idx) => (
+              <button
+                key={cat}
+                className={`px-5 py-2 rounded-full border text-base font-medium transition-colors ${
+                  idx === 0
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-black border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
           </div>
-          <button className="w-full sm:w-auto px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-secondary/20 transition-colors">
-            Filters
-          </button>
-          <button className="w-full sm:w-auto px-4 py-2 border rounded-lg flex items-center gap-2 hover:bg-secondary/20 transition-colors">
-            Near Me
-          </button>
         </div>
-      </header>
-
-      {/* --- MAIN CONTENT ---  Add padding/margin here! */}
+      </section>
+      {/* --- MAIN CONTENT --- */}
       <main className="py-8"> {/* Add padding here */}
         {/* --- CATEGORIES --- */}
         <section className="mb-8">
